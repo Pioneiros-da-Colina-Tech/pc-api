@@ -1,0 +1,1236 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentação da API para gerenciamento de desbravadores.">
+      
+      
+      
+      
+        <link rel="prev" href="../Regioanl-doc/">
+      
+      
+        <link rel="next" href="../patrimonio_doc/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+    
+    
+      
+        <title>Tesouraria - Pioneiros da Colina API</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#documentacao-da-api-pioneiros-da-colina" class="md-skip">
+          Ir para o conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="Pioneiros da Colina API" class="md-header__button md-logo" aria-label="Pioneiros da Colina API" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pioneiros da Colina API
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tesouraria
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando a pesquisa
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../project_structure/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Estrutura do Projeto
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../domain_driven_design/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Arquitetura DDD
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../creating_routes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Criando Novas Rotas
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../database/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Banco de Dados
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../Avaliacao_Regional_doc/" class="md-tabs__link">
+          
+  
+  
+  Documentação API
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Pioneiros da Colina API" class="md-nav__button md-logo" aria-label="Pioneiros da Colina API" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pioneiros da Colina API
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project_structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Estrutura do Projeto
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../domain_driven_design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Arquitetura DDD
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../creating_routes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Criando Novas Rotas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Banco de Dados
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Documentação API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Documentação API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Avaliacao_Regional_doc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Avaliação Regional
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pontuacao-doc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pontuação
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Regioanl-doc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Regional
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Tesouraria
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tesouraria
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-tesouraria" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Tesouraria
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Tesouraria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-visao-geral" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1. Visão Geral
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-fluxo-de-caixa" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2. Fluxo de Caixa
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-mensalidades" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3. Mensalidades
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-eventos" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.4. Eventos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-relatorios" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.5. Relatórios
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-apoio-regional" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Apoio Regional
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-avaliacao-regional" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Avaliação Regional
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-pontuacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Pontuação
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-patrimonio" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Patrimônio
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../patrimonio_doc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Patrimônio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="documentacao-da-api-pioneiros-da-colina">Documentação da API - Pioneiros da Colina</h1>
+<p>Esta documentação descreve os endpoints da API necessários para alimentar o sistema de gerenciamento do clube Pioneiros da Colina.</p>
+<h2 id="1-tesouraria">1. Tesouraria</h2>
+<p>Endpoints para o gerenciamento financeiro completo do clube, incluindo fluxo de caixa, mensalidades, eventos e relatórios.</p>
+<h3 id="11-visao-geral">1.1. Visão Geral</h3>
+<ul>
+<li><strong><code>GET /tesouraria/visao-geral</code></strong><ul>
+<li><strong>Descrição:</strong> Retorna um resumo financeiro consolidado do mês atual, ideal para os cards de destaque.</li>
+<li><strong>Uso:</strong> Alimenta a aba "Visão Geral".</li>
+<li><strong>Resposta (Exemplo):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&quot;receitasMes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2450.00</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">&quot;despesasMes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1850.00</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">&quot;saldoAtual&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">600.00</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">&quot;orcamentoUtilizadoPercentual&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">75</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+</ul>
+<h3 id="12-fluxo-de-caixa">1.2. Fluxo de Caixa</h3>
+<ul>
+<li>
+<p><strong><code>GET /caixa/lancamentos</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna uma lista de todos os lançamentos do fluxo de caixa, podendo ser filtrado por período.</li>
+<li><strong>Query Params (Opcionais):</strong> <code>?data_inicio=YYYY-MM-DD&amp;data_fim=YYYY-MM-DD</code></li>
+<li><strong>Uso:</strong> Alimenta a lista de "Últimos Lançamentos" na aba "Fluxo de Caixa".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>POST /caixa/lancamentos</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Registra um novo lançamento (entrada ou saída) no caixa.</li>
+<li><strong>Uso:</strong> Formulário "Registrar Lançamento no Caixa".</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;tipo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;saida&quot;</span><span class="p">,</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;descricao&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Compra de material de limpeza&quot;</span><span class="p">,</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;valor&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">80.00</span><span class="p">,</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-01-16&quot;</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">&quot;metodo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pix&quot;</span><span class="p">,</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">&quot;categoria&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Geral&quot;</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+</ul>
+<h3 id="13-mensalidades">1.3. Mensalidades</h3>
+<ul>
+<li>
+<p><strong><code>GET /mensalidades</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna a lista de todos os meses de mensalidade já criados.</li>
+<li><strong>Uso:</strong> Card "Gerenciar Mensalidades" e dropdown de seleção de mês.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>POST /mensalidades</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Cria um novo mês de mensalidade.</li>
+<li><strong>Uso:</strong> Formulário "Criar Novo Mês".</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;mes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Março 2025&quot;</span><span class="p">,</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;valor&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">50.00</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+<li>
+<p><strong><code>PUT /mensalidades/{id}</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Edita o nome ou o valor de uma mensalidade.</li>
+<li><strong>Uso:</strong> Botão "Editar" no card "Gerenciar Mensalidades".</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;mes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Janeiro 2025 Editado&quot;</span><span class="p">,</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;valor&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">55.00</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /mensalidades/{id}/pagamentos</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna a lista de todos os membros e o status de pagamento da mensalidade do mês selecionado.</li>
+<li><strong>Uso:</strong> Card "Controle de Pagamentos" ao selecionar um mês.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>PUT /mensalidades/{id}/pagamentos</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Atualiza o status de pagamento de um membro para uma mensalidade.</li>
+<li><strong>Uso:</strong> Botões de ação na lista de membros em "Controle de Pagamentos".</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&quot;codigo_sgc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;67890&quot;</span><span class="p">,</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pago&quot;</span><span class="p">,</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">&quot;metodo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cartão/Dinheiro&quot;</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+</ul>
+<h3 id="14-eventos">1.4. Eventos</h3>
+<ul>
+<li>
+<p><strong><code>GET /eventos</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna a lista de todos os eventos criados.</li>
+<li><strong>Uso:</strong> Abastece o card "Gerenciar Eventos" e os dropdowns de seleção de evento.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>POST /eventos</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Cria um novo evento.</li>
+<li><strong>Uso:</strong> Formulário "Criar Novo Evento".</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&quot;nome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Caminhada Ecológica&quot;</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">&quot;valorDesbravador&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">25.00</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">&quot;valorDiretoria&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.00</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+<li>
+<p><strong><code>PUT /eventos/{id}</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Atualiza os detalhes de um evento existente.</li>
+<li><strong>Uso:</strong> Botão "Editar" no card "Gerenciar Eventos".</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">{</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">&quot;nome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Acampamento de Verão 2025&quot;</span><span class="p">,</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">&quot;valorDesbravador&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">160.00</span><span class="p">,</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="nt">&quot;valorDiretoria&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">80.00</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /eventos/{id}/pagamentos</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna a lista de membros inscritos em um evento e o status de pagamento de cada um.</li>
+<li><strong>Uso:</strong> Card "Controle de Pagamentos de Eventos" ao selecionar um evento.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>PUT /eventos/{id}/pagamentos</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Atualiza o status de pagamento de um membro para um evento.</li>
+<li><strong>Uso:</strong> Botões de ação na lista de membros em "Controle de Pagamentos de Eventos".</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">{</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">&quot;codigo_sgc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;67890&quot;</span><span class="p">,</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pago&quot;</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+<li>
+<p><strong><code>POST /eventos/{id}/inscricoes</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Inscreve um membro em um evento.</li>
+<li><strong>Uso:</strong> Card "Inscrever Membro em Evento".</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">&quot;codigo_sgc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;11122&quot;</span><span class="p">,</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Pendente&quot;</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+</ul>
+<h3 id="15-relatorios">1.5. Relatórios</h3>
+<ul>
+<li>
+<p><strong><code>GET /relatorios/mensal</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna os dados para o relatório financeiro de um mês específico.</li>
+<li><strong>Query Params:</strong> <code>?ano=2025&amp;mes=1</code></li>
+<li><strong>Uso:</strong> Card "Relatório Mensal / Fechamento de Mês".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /relatorios/eventos/{id}</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna os dados financeiros e de inscrições para um evento específico.</li>
+<li><strong>Uso:</strong> Card "Relatório de Eventos".</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-apoio-regional">2. Apoio Regional</h2>
+<p>Canal de comunicação e recursos entre o clube e a coordenação regional.</p>
+<ul>
+<li>
+<p><strong><code>GET /regional/posts</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna a lista de posts e comunicados da regional.</li>
+<li><strong>Uso:</strong> Card "Posts da Regional".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /regional/avaliacoes</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna a lista de datas de avaliações.</li>
+<li><strong>Uso:</strong> Card "Datas das Avaliações".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /regional/arquivos</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna a lista de arquivos e manuais para download.</li>
+<li><strong>Uso:</strong> Card "Arquivos e Manuais".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /regional/mensagens</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna o histórico de mensagens enviadas pelo clube para a regional.</li>
+<li><strong>Uso:</strong> Card "Minhas Mensagens Enviadas".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>POST /regional/mensagens</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Envia uma nova mensagem do clube para a regional.</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">&quot;assunto&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dúvida sobre o Camporee&quot;</span><span class="p">,</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span><span class="nt">&quot;mensagem&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Gostaríamos de confirmar se o local permanece o mesmo.&quot;</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+</ul>
+<h2 id="3-avaliacao-regional">3. Avaliação Regional</h2>
+<p>Endpoints para a liderança regional avaliar o progresso dos membros.</p>
+<ul>
+<li>
+<p><strong><code>GET /avaliacoes/classes</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna todos os requisitos de classe pendentes de avaliação ou para refazer.</li>
+<li><strong>Query Params:</strong> <code>?unidade_id=int</code> (para filtrar).</li>
+<li><strong>Uso:</strong> Aba "Classes".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>PUT /avaliacoes/classes/{id_avaliacao}</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Atualiza o status de um requisito de classe para um membro.</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">{</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Aprovado&quot;</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="p">}</span>
+</span></code></pre></div></li>
+<li><strong>Uso:</strong> Botões de ação na aba "Classes".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /avaliacoes/especialidades</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna todas as especialidades pendentes de avaliação ou para refazer.</li>
+<li><strong>Query Params:</strong> <code>?unidade_id=int</code> (para filtrar).</li>
+<li><strong>Uso:</strong> Aba "Especialidades".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>PUT /avaliacoes/especialidades/{id_avaliacao}</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Atualiza o status de uma especialidade para um membro.</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">{</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Refazer&quot;</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="p">}</span>
+</span></code></pre></div></li>
+<li><strong>Uso:</strong> Botões de ação na aba "Especialidades".</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-pontuacao">4. Pontuação</h2>
+<p>Endpoints para exibir rankings de desempenho e gerenciar pontos bônus.</p>
+<ul>
+<li>
+<p><strong><code>GET /ranking/unidades</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna a pontuação total de cada unidade para o ranking geral.</li>
+<li><strong>Uso:</strong> Card "Ranking Geral das Unidades".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /ranking/unidades/categorias</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna a pontuação de cada unidade, separada por categoria.</li>
+<li><strong>Uso:</strong> Card "Ranking de Unidades por Categoria".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /ranking/membros</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna a pontuação detalhada de cada membro.</li>
+<li><strong>Query Params:</strong> <code>?cargo=string</code> (para filtrar).</li>
+<li><strong>Uso:</strong> Tabela "Ranking Individual de Membros".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>POST /pontuacao/bonus</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Lança um ponto bônus para uma unidade ou membro.</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">&quot;tipo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;unidade&quot;</span><span class="p">,</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span><span class="nt">&quot;pontos&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span><span class="nt">&quot;descricao&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Decoração da sala da unidade.&quot;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="p">}</span>
+</span></code></pre></div></li>
+<li><strong>Uso:</strong> Aba "Lançar Bônus".</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-patrimonio">5. Patrimônio</h2>
+<p>Endpoints para gerenciamento do inventário e das solicitações de materiais.</p>
+<ul>
+<li>
+<p><strong><code>GET /patrimonio</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna todos os itens do inventário do clube.</li>
+<li><strong>Uso:</strong> Abas "Gerenciar Patrimônio" e "Solicitar Materiais".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>POST /patrimonio</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Adiciona um novo item ao inventário.</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">{</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="nt">&quot;nome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lanterna de LED&quot;</span><span class="p">,</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">  </span><span class="nt">&quot;quantidade&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">  </span><span class="nt">&quot;descricao&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Modelo recarregável&quot;</span><span class="p">,</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">  </span><span class="nt">&quot;data_aquisicao&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-08-17&quot;</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="p">}</span>
+</span></code></pre></div></li>
+<li><strong>Uso:</strong> Formulário na aba "Gerenciar Patrimônio".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /solicitacoes</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna todas as solicitações de materiais feitas pelas unidades (visão da diretoria).</li>
+<li><strong>Uso:</strong> Aba "Solicitações de Materiais".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>GET /solicitacoes/minhas</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Retorna as solicitações feitas pelo usuário/unidade logado.</li>
+<li><strong>Uso:</strong> Card "Minhas Solicitações" na aba "Solicitar Materiais".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>POST /solicitacoes</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Cria uma nova solicitação de material.</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;reuniaoId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">&quot;itens&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;itemId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;quantidade&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;itemId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;quantidade&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="p">}</span>
+</span></code></pre></div></li>
+<li><strong>Uso:</strong> Formulário na aba "Solicitar Materiais".</li>
+</ul>
+</li>
+<li>
+<p><strong><code>PUT /solicitacoes/{id}/status</code></strong></p>
+<ul>
+<li><strong>Descrição:</strong> Atualiza o status de uma solicitação (Aprovar, Reprovar, Entregue, etc.).</li>
+<li><strong>Corpo da Requisição (Body):</strong>
+    <div class="language-json highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="p">{</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;reprovado&quot;</span><span class="p">,</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">  </span><span class="nt">&quot;motivoReprovacao&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Item indisponível na data solicitada.&quot;</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="p">}</span>
+</span></code></pre></div></li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "Mais 1 nesta p\u00e1gina", "search.result.more.other": "Mais # nesta p\u00e1gina", "search.result.none": "Nenhum resultado encontrado", "search.result.one": "1 resultado encontrado", "search.result.other": "# resultados encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>
