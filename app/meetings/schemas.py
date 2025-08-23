@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -9,5 +8,5 @@ class Meeting(BaseModel):
     title: str
     start_time: datetime
     end_time: datetime
-    location: Optional[str] = None
-    attendees: List[str] = []
+    location: str | None = None
+    attendees: list[str] = []
