@@ -59,7 +59,7 @@ def get_app() -> FastAPI:
 app = get_app()
 
 if __name__ == "__main__":
-    from granian.constants import Interfaces
+    from granian.constants import Interfaces, Loops
     from granian.log import LogLevels
     from granian.server import Server
 
@@ -71,5 +71,6 @@ if __name__ == "__main__":
         interface=Interfaces.ASGI,
         log_access=True,
         log_level=LogLevels.info,
+        loop=Loops.uvloop,
         workers=WORKERS,
     ).serve()
