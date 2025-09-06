@@ -8,7 +8,12 @@ Endpoints para a diretoria visualizar, adicionar, editar e remover itens do inve
 
 * **`GET /patrimonio`**
     * **Descrição:** Retorna a lista completa de todos os itens do inventário.
-    * **Uso:** Alimenta a tabela na aba "Gerenciar Patrimônio" e a lista de itens disponíveis na aba "Solicitar Materiais".
+    * **Tabelas Envolvidas:**
+        * `patrimonio`: `id`, `nome`, `quantidade`, `descricao`, `data_aquisicao`
+    * **Query Base (PostgreSQL):**
+        ```sql
+        SELECT id, nome, quantidade, descricao, data_aquisicao FROM patrimonio ORDER BY nome ASC;
+        ```
     * **Resposta (Exemplo):**
         ```json
         [
@@ -24,7 +29,14 @@ Endpoints para a diretoria visualizar, adicionar, editar e remover itens do inve
 
 * **`POST /patrimonio`**
     * **Descrição:** Adiciona um novo item ao inventário do clube.
-    * **Uso:** Formulário "Adicionar Item ao Patrimônio" na aba "Gerenciar Patrimônio".
+    * **Tabelas Envolvidas:**
+        * `patrimonio`: `nome`, `quantidade`, `descricao`, `data_aquisicao`
+    * **Query Base (PostgreSQL):**
+        ```sql
+        INSERT INTO patrimonio (nome, quantidade, descricao, data_aquisicao)
+        VALUES (:nome, :quantidade, :descricao, :data_aquisicao)
+        RETURNING id;
+        ```
     * **Corpo da Requisição (Body):**
         ```json
         {
@@ -37,7 +49,14 @@ Endpoints para a diretoria visualizar, adicionar, editar e remover itens do inve
 
 * **`PUT /patrimonio/{id}`**
     * **Descrição:** Atualiza as informações de um item existente no inventário.
-    * **Uso:** Botão "Editar" na tabela de itens.
+    * **Tabelas Envolvidas:**
+        * `patrimonio`: `nome`, `quantidade`, `descricao`
+    * **Query Base (PostgreSQL):**
+        ```sql
+        UPDATE patrimonio
+        SET nome = :nome, quantidade = :quantidade, descricao = :descricao
+        WHERE id = :id;
+        ```
     * **Corpo da Requisição (Body):**
         ```json
         {
@@ -49,15 +68,26 @@ Endpoints para a diretoria visualizar, adicionar, editar e remover itens do inve
 
 * **`DELETE /patrimonio/{id}`**
     * **Descrição:** Remove um item do inventário.
-    * **Uso:** Botão "Remover" na tabela de itens.
+    * **Tabelas Envolvidas:**
+        * `patrimonio`
+    * **Query Base (PostgreSQL):**
+        ```sql
+        DELETE FROM patrimonio WHERE id = :id;
+        ```
 
 ## 2. Solicitação de Materiais (Visão da Unidade)
 
 Endpoints para as unidades do clube solicitarem materiais para suas reuniões e atividades.
 
 * **`POST /solicitacoes`**
-    * **Descrição:** Cria uma nova solicitação de materiais para uma reunião específica.
-    * **Uso:** Botão "Salvar Solicitações" na aba "Solicitar Materiais".
+    * **Descrição:** Cria uma nova solicitação de materiais para uma reunião específica. A API deve criar um registro na tabela `solicitacoes` para cada item do array.
+    * **Tabelas Envolvidas:**
+        * `solicitacoes`: `codigo_sgc`, `id_item`, `quantidade`, `data_solicitacao`, `status`, `reuniao_id`
+    * **Query Base (PostgreSQL - executada em loop ou batch):**
+        ```sql
+        INSERT INTO solicitacoes (codigo_sgc, id_item, quantidade, data_solicitacao, status, reuniao_id)
+        VALUES (:codigo_sgc_logado, :itemId, :quantidade, CURRENT_DATE, 'Pendente', :reuniaoId);
+        ```
     * **Corpo da Requisição (Body):**
         ```json
         {
@@ -70,8 +100,27 @@ Endpoints para as unidades do clube solicitarem materiais para suas reuniões e 
         ```
 
 * **`GET /solicitacoes/minhas`**
-    * **Descrição:** Retorna o histórico de solicitações feitas pela unidade do usuário logado, incluindo o status e o motivo de reprovação.
-    * **Uso:** Card "Minhas Solicitações" na aba "Solicitar Materiais".
+    * **Descrição:** Retorna o histórico de solicitações feitas pela unidade do usuário logado.
+    * **Tabelas Envolvidas:**
+        * `solicitacoes`: `id`, `status`, `motivo_reprovacao`, `quantidade`
+        * `reunioes`: `nome`, `data`
+        * `patrimonio`: `nome`
+    * **Query Base (PostgreSQL):**
+        ```sql
+        SELECT
+          s.id,
+          r.nome AS reuniao,
+          r.data,
+          s.status,
+          s.motivo_reprovacao AS motivoReprovacao,
+          p.nome AS item_nome,
+          s.quantidade
+        FROM solicitacoes s
+        JOIN reunioes r ON s.reuniao_id = r.id
+        JOIN patrimonio p ON s.id_item = p.id
+        WHERE s.codigo_sgc = :codigo_sgc_logado
+        ORDER BY r.data DESC;
+        ```
     * **Resposta (Exemplo):**
         ```json
         [
@@ -95,8 +144,31 @@ Endpoints para a diretoria do clube aprovar, reprovar e gerenciar o fluxo de ent
 
 * **`GET /solicitacoes`**
     * **Descrição:** Retorna todas as solicitações de materiais de todas as unidades, agrupadas por reunião.
-    * **Uso:** Alimenta a aba "Solicitações de Materiais".
-    * **Resposta (Exemplo):**
+    * **Tabelas Envolvidas:**
+        * `solicitacoes`: `id`, `status`, `quantidade`
+        * `membros`: `codigo_sgc`
+        * `unidades`: `nome`
+        * `reunioes`: `id`, `nome`, `data`
+        * `patrimonio`: `nome`
+    * **Query Base (PostgreSQL):**
+        ```sql
+        SELECT
+          s.id,
+          s.status,
+          s.quantidade,
+          r.id AS reuniao_id,
+          r.nome AS reuniao_nome,
+          r.data AS reuniao_data,
+          u.nome AS unidade,
+          p.nome AS item_nome
+        FROM solicitacoes s
+        JOIN membros m ON s.codigo_sgc = m.codigo_sgc
+        JOIN unidades u ON m.id_unidade = u.id
+        JOIN reunioes r ON s.reuniao_id = r.id
+        JOIN patrimonio p ON s.id_item = p.id
+        ORDER BY r.data DESC, u.nome;
+        ```
+    * **Resposta (Exemplo - a API deve agrupar o resultado da query por reunião):**
         ```json
         [
           {
@@ -116,9 +188,17 @@ Endpoints para a diretoria do clube aprovar, reprovar e gerenciar o fluxo de ent
           }
         ]
         ```
+
 * **`PUT /solicitacoes/{id}/status`**
-    * **Descrição:** Atualiza o status de uma solicitação específica (Aprovar, Reprovar, Marcar como Entregue, etc.).
-    * **Uso:** Botões de ação na aba "Solicitações de Materiais".
+    * **Descrição:** Atualiza o status de uma solicitação específica (Aprovar, Reprovar, Entregue, etc.).
+    * **Tabelas Envolvidas:**
+        * `solicitacoes`: `status`, `motivo_reprovacao`
+    * **Query Base (PostgreSQL):**
+        ```sql
+        UPDATE solicitacoes
+        SET status = :status, motivo_reprovacao = :motivoReprovacao
+        WHERE id = :id;
+        ```
     * **Corpo da Requisição (Body):**
         ```json
         {
