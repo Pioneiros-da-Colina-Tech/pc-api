@@ -174,6 +174,21 @@ def unauthorized_error() -> APIError:
     )
 
 
+def inactive_user() -> APIError:
+    """
+    Creates an APIError for an inactive user.
+
+    This error is used when a user is disabled and cannot perform actions.
+
+    Returns:
+        APIError: An APIError instance with status code 400 (BAD_REQUEST).
+    """
+    return APIError(
+        message="Inactive user",
+        status_code=HTTPStatus.FORBIDDEN,
+    )
+
+
 def invalid_or_expired_token() -> APIError:
     """
     Creates an APIError for an invalid or expired authentication token.

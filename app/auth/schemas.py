@@ -38,7 +38,7 @@ class User(BaseModel):
     hashed_password: str
     full_name: str
     disabled: bool = False
-    sgc_code: str
+    sgc_code: str | None = None
     created_at: datetime
     updated_at: datetime
 
