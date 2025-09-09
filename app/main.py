@@ -7,7 +7,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.api.exc import APIError, api_error_handler
 from app.api.routes import router
 from app.api.secure import secure_middleware
-from app.infra.database.adapter import DatabaseAdapter, create_session_adapter
+from app.infra.database.adapter import DatabaseAdapter
 from app.infra.database.config import DatabaseConfig
 from app.settings import (
     DATABASE_CONFIG,
@@ -21,8 +21,8 @@ from app.settings import (
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan event handler for FastAPI"""
-    app.state.session_adapter = await create_session_adapter(
-        DatabaseAdapter(config=DatabaseConfig(connection=DATABASE_CONFIG))
+    app.state.session_adapter = DatabaseAdapter(
+        config=DatabaseConfig(connection=DATABASE_CONFIG)
     )
     yield
 
