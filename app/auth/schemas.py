@@ -11,6 +11,11 @@ from pydantic import (
 from typeid.typeid import TypeID
 
 
+class LoginRequestSchema(BaseModel):
+    login: str = Field(..., description="Username or email for login")
+    password: str = Field(..., description="User password")
+
+
 class TokenSchema(BaseModel):
     access_token: str
     token_type: str

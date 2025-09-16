@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.schemas import BaseResponseSchema
 
-from .dependencies import get_auth_repository
+from .dependencies import get_auth_repository, get_current_user
 from .domain import (
     DeleteUserUseCase,
     DisableUserUseCase,
@@ -15,7 +14,7 @@ from .domain import (
     SearchUsersUseCase,
 )
 from .repository import AuthRepository
-from .schemas import TokenSchema, UserSchema
+from .schemas import LoginRequestSchema, User, UserSchema
 
 router = APIRouter()
 
@@ -25,12 +24,39 @@ async def list_users(
     limit: int = 100,
     offset: int = 0,
     include_disabled: bool = False,
+    current_user: User = Depends(get_current_user),
     auth_repo: AuthRepository = Depends(get_auth_repository),
 ):
-    """List users with pagination."""
-    return await ListUsersUseCase(
+    """List users with pagination. Requires authentication."""
+    result = await ListUsersUseCase(
         limit, offset, include_disabled, auth_repo
     ).execute()
+
+    # Add current user info to the response
+    result.data["current_user"] = {
+        "id": str(current_user.id_),
+        "username": current_user.username,
+        "email": current_user.email,
+        "full_name": current_user.full_name,
+    }
+
+    return result
+
+
+@router.get("/me", response_model=BaseResponseSchema)
+async def get_current_user_info(
+    current_user: User = Depends(get_current_user),
+):
+    """Get current authenticated user information."""
+    # Remove sensitive information
+    user_data = current_user.model_dump()
+    del user_data["hashed_password"]
+
+    return BaseResponseSchema(
+        status=200,
+        message="Current user retrieved successfully",
+        data=user_data,
+    )
 
 
 @router.get("/users/{user_id}", response_model=BaseResponseSchema)
@@ -61,13 +87,13 @@ async def register_user(
     return await RegisterUserUseCase(user_data, auth_repo).execute()
 
 
-@router.post("/token", response_model=TokenSchema)
+@router.post("/token", response_model=BaseResponseSchema)
 async def login_user(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    login_data: LoginRequestSchema,
     auth_repo: AuthRepository = Depends(get_auth_repository),
 ):
     """Login a user and return a token."""
-    return await LoginUserUseCase(form_data, auth_repo).execute()
+    return await LoginUserUseCase(login_data, auth_repo).execute()
 
 
 @router.put("/users/{user_id}/disable", response_model=BaseResponseSchema)

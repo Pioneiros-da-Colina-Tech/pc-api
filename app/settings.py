@@ -12,6 +12,15 @@ SERVER_HOST = str(config("SERVER_HOST", default="0.0.0.0", cast=str))
 SERVER_PORT = config("SERVER_PORT", default=8000, cast=int)
 WORKERS = config("WORKERS", default=5, cast=int)
 
+# JWT Configuration
+JWT_SECRET_KEY = str(
+    config("JWT_SECRET_KEY", default="your-secret-key-change-this", cast=str)
+)
+JWT_ALGORITHM = str(config("JWT_ALGORITHM", default="HS256", cast=str))
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES = config(
+    "JWT_ACCESS_TOKEN_EXPIRE_MINUTES", default=30, cast=int
+)
+
 DB_HOST = str(config("DB_HOST", default="localhost", cast=str))
 DB_PORT = config("DB_PORT", default=5432, cast=int)
 DB_NAME = str(config("DB_NAME", default="", cast=str))

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from fastapi.security import OAuth2PasswordRequestForm
+from loguru import logger
 from typeid import TypeID
 
 from app.api.exc.exceptions import (
@@ -8,14 +9,14 @@ from app.api.exc.exceptions import (
     already_exists,
     does_not_exist,
     inactive_user,
-    unauthorized_error,
+    unauthenticated,
     validation_error,
 )
 from app.api.schemas import BaseResponseSchema
 
 from .repository import AuthRepository
-from .schemas import TokenSchema, UserSchema
-from .utils import get_password_hash, verify_password
+from .schemas import LoginRequestSchema, TokenSchema, UserSchema
+from .utils import create_access_token, get_password_hash, verify_password
 
 
 @dataclass
@@ -47,28 +48,33 @@ class RegisterUserUseCase:
 
 @dataclass
 class LoginUserUseCase:
-    form_data: OAuth2PasswordRequestForm
+    login_data: LoginRequestSchema
     auth_repo: AuthRepository
 
     async def execute(self) -> BaseResponseSchema:
-        user = await self.auth_repo.get_user_by_username(
-            self.form_data.username
+        form_data = OAuth2PasswordRequestForm(
+            username=self.login_data.login, password=self.login_data.password
         )
 
+        user = await self.auth_repo.get_user_by_username(form_data.username)
+        logger.info(user)
+
         if not user or not verify_password(
-            self.form_data.password, user.hashed_password
+            form_data.password, user.hashed_password
         ):
-            raise unauthorized_error()
+            raise unauthenticated()
 
         if user.disabled:
             raise inactive_user()
 
+        access_token = create_access_token(
+            data={"sub": str(user.id_), "username": user.username}
+        )
+
         return BaseResponseSchema(
             status=200,
             message="User logged in successfully",
-            data=TokenSchema(
-                access_token="placeholder_token", token_type="bearer"
-            ),
+            data=TokenSchema(access_token=access_token, token_type="bearer"),
         )
 
 
@@ -93,7 +99,6 @@ class GetUserUseCase:
         if not user:
             raise does_not_exist("User")
 
-        # Remove sensitive information
         user_data = user.model_dump()
         del user_data["hashed_password"]
 
@@ -121,7 +126,6 @@ class ListUsersUseCase:
             include_disabled=self.include_disabled
         )
 
-        # Remove sensitive information
         users_data = []
         for user in users:
             user_data = user.model_dump()
@@ -252,7 +256,6 @@ class SearchUsersUseCase:
             self.query.strip(), limit=self.limit
         )
 
-        # Remove sensitive information
         users_data = []
         for user in users:
             user_data = user.model_dump()
