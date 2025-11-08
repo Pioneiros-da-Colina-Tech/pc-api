@@ -3,6 +3,8 @@ from urllib.parse import quote_plus
 
 from pydantic import BaseModel, Field
 
+from app.settings import database_settings
+
 
 class PoolConfig(BaseModel):
     size: int = 10
@@ -11,11 +13,12 @@ class PoolConfig(BaseModel):
 
 
 class ConnectionConfig(BaseModel):
-    host: str
-    user: str
-    password: str
-    name: str
-    port: int = 5432
+    host: str = database_settings.DATABASE_HOST
+    user: str = database_settings.DATABASE_USER
+    password: str = database_settings.DATABASE_PASSWORD
+    name: str = database_settings.DATABASE_NAME
+    port: int = database_settings.DATABASE_PORT
+    echo: bool = database_settings.DATABASE_ECHO
     pool: PoolConfig = Field(default_factory=PoolConfig)
 
 
@@ -25,7 +28,9 @@ class DatabaseConfig:
 
     def make_uri(self, *, is_asyncio: bool) -> str:
         """Create a database URI."""
-        scheme = "postgresql+asyncpg" if is_asyncio else "postgresql+psycopg"
+        scheme = (
+            "postgresql+psycopg_async" if is_asyncio else "postgresql+psycopg"
+        )
         user = quote_plus(self.connection.user)
         password = quote_plus(self.connection.password)
         return f"{scheme}://{user}:{password}@{self.connection.host}:{self.connection.port}/{self.connection.name}"

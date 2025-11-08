@@ -423,16 +423,21 @@ CREATE TABLE public.user_mensalidades (
 
 -- DROP TABLE public.usuarios;
 
-CREATE TABLE public.usuarios (
-	id serial4 NOT NULL,
-	login text NOT NULL,
-	senha text NOT NULL,
-	permissao text NULL,
-	codigo_sgc text NULL,
-	CONSTRAINT usuarios_login_key UNIQUE (login),
-	CONSTRAINT usuarios_pkey PRIMARY KEY (id),
-	CONSTRAINT usuarios_codigo_sgc_fkey FOREIGN KEY (codigo_sgc) REFERENCES public.membros(codigo_sgc) ON UPDATE CASCADE
+CREATE TABLE public.users (
+    id text PRIMARY KEY UNIQUE,
+    username text NOT NULL UNIQUE,
+    email text NOT NULL UNIQUE,
+    hashed_password text NOT NULL UNIQUE,
+    full_name text,
+    phone_number text,
+    disabled boolean NOT NULL DEFAULT false,
+    sgc_code text REFERENCES membros(codigo_sgc) ON UPDATE CASCADE,
+    created_at timestamp with time zone not null default now(),
+  	updated_at timestamp with time zone null default now(),
+    deleted_at timestamp with time zone DEFAULT NULL,
+	CONSTRAINT usuarios_codigo_sgc_fkey FOREIGN KEY (sgc_code) REFERENCES public.membros(codigo_sgc) ON UPDATE CASCADE
 );
+
 
 
 -- public.associados definição
