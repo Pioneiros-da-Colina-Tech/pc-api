@@ -77,14 +77,6 @@ class Entity(DeclarativeBase):
         """Return the table name for the entity."""
         return to_snake(cls.__name__).lower().removesuffix("_entity")
 
-    @declared_attr.directive
-    def __table_args__(cls):
-        """Dynamically determine schema based on parent module name."""
-        module_parts = cls.__module__.split(".")
-        schema = module_parts[-2] if len(module_parts) >= 2 else "public"
-
-        return {"schema": schema}
-
 
 class TimestampMixin:
     """Mixin class to add created_at and updated_at timestamps."""

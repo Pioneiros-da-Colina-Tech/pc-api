@@ -33,7 +33,7 @@ def get_app() -> FastAPI:
         },
         openapi_url="/openapi.json" if server_settings.LOCAL else None,
         docs_url="/docs" if server_settings.LOCAL else None,
-        redoc_url=None,
+        redoc_url="/redoc" if server_settings.LOCAL else None,
         default_response_class=ORJSONResponse,
         lifespan=lifespan,
     )
