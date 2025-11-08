@@ -10,7 +10,7 @@ from app.api.secure import secure_middleware
 from app.infra.database.adapter import (
     create_session_adapter,
 )
-from app.settings import server_settings
+from app.settings import VERSION, server_settings
 
 
 @asynccontextmanager
@@ -25,7 +25,7 @@ def get_app() -> FastAPI:
     app = FastAPI(
         title="Pioneiros da Colina",
         description="Pioneiros da Colina API for pathfinders management",
-        version="0.1.0",
+        version=VERSION,
         contact={
             "name": "Pioneiros da colina",
             "email": "dev@rezendevitor.gmail.com",
