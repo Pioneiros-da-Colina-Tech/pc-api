@@ -1,3 +1,9 @@
+## 0.2.1 (2025-11-08)
+
+### Feat
+
+- **migrations**: added migrations
+
 ## 0.2.0 (2025-11-08)
 
 ### BREAKING CHANGE
