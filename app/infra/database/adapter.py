@@ -1,26 +1,28 @@
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncGenerator, Awaitable, Callable
+from contextlib import aclosing, asynccontextmanager
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Any
+from typing import Annotated, Any
 
 import sqlalchemy as sa
 import sqlalchemy.ext.asyncio as sa_async
-from fastapi import Request
+from fastapi import Depends, FastAPI, Request
 
-from .config import DatabaseConfig
+from app.settings import database_settings
+
+from .config import ConnectionConfig, DatabaseConfig, PoolConfig
 
 
 @dataclass
 class DatabaseAdapter:
     config: DatabaseConfig
-    debug: bool = False
 
     @cached_property
     def engine(self) -> sa_async.AsyncEngine:
         return sa_async.create_async_engine(
             self.config.make_uri(is_asyncio=True),
             pool_size=self.config.connection.pool.size,
-            echo=self.debug,
+            echo=self.config.connection.echo,
             pool_recycle=self.config.connection.pool.recycle,
             max_overflow=self.config.connection.pool.max_overflow,
         )
@@ -65,21 +67,14 @@ class DatabaseAdapter:
     async def begin(self, client: sa_async.AsyncConnection) -> None:
         if not client.in_transaction():
             _ = await client.begin()
-        else:
-            _ = await client.begin_nested()
-
-    async def in_atomic(self, client: sa_async.AsyncConnection) -> bool:
-        """
-        Check if the connection is in a transaction.
-        """
-        return client.in_transaction() or client.in_nested_transaction()
+        _ = await client.begin_nested()
 
     @cached_property
     def session(self) -> "SessionAdapter":
         """
         Create a session adapter for the database connection.
         """
-        return SessionAdapter(provider=self, debug=self.debug)
+        return SessionAdapter(provider=self, debug=self.config.connection.echo)
 
 
 @dataclass
@@ -132,15 +127,9 @@ class SessionAdapter:
         Begin the session.
         """
         if not client.in_transaction():
-            await client.begin()
+            _ = await client.begin()
         else:
-            await client.begin_nested()
-
-    async def in_atomic(self, client: sa_async.AsyncSession) -> bool:
-        """
-        Check if the session is in a transaction.
-        """
-        return client.in_transaction()
+            _ = await client.begin_nested()
 
 
 # FastAPI Integration #
@@ -148,45 +137,26 @@ class SessionAdapter:
 metadata = sa.MetaData()
 
 
-class AsyncSessionManager:
-    """
-    Async context manager for database sessions.
-
-    Provides an alternative pattern to the dependency injection approach.
-    Usage:
-        async with AsyncSessionManager(adapter) as session:
-            # Use session here
-            result = await session.execute(text("SELECT 1"))
-            # Session is automatically committed and closed
-    """
-
-    def __init__(self, adapter: DatabaseAdapter):
-        self.adapter = adapter
-        self.session: sa_async.AsyncSession | None = None
-
-    async def __aenter__(self) -> sa_async.AsyncSession:
-        self.session = await self.adapter.session.new()
-        return self.session
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self.session:
-            try:
-                if exc_type is None:
-                    await self.session.commit()
-                else:
-                    await self.session.rollback()
-            finally:
-                await self.session.close()
-                self.session = None
-
-
+@asynccontextmanager
 async def create_session_adapter(
-    provider: DatabaseAdapter,
-) -> sa_async.AsyncSession:
+    app: FastAPI,
+) -> AsyncGenerator[None]:
     """
     Create a session adapter.
     """
-    return await SessionAdapter(provider).new()
+    config = DatabaseConfig(
+        connection=ConnectionConfig(
+            host=database_settings.DATABASE_HOST,
+            port=database_settings.DATABASE_PORT,
+            user=database_settings.DATABASE_USER,
+            password=database_settings.DATABASE_PASSWORD,
+            name=database_settings.DATABASE_NAME,
+            pool=PoolConfig(size=database_settings.DATABASE_POOL_SIZE),
+        )
+    )
+    async with aclosing(DatabaseAdapter(config=config)) as adapter:
+        app.state.session_adapter = adapter
+        yield
 
 
 def get_session_adapter(request: Request) -> DatabaseAdapter:
@@ -194,3 +164,26 @@ def get_session_adapter(request: Request) -> DatabaseAdapter:
     Get the session adapter.
     """
     return request.app.state.session_adapter
+
+
+async def get_session(
+    adapter: Annotated[DatabaseAdapter, Depends(get_session_adapter)],
+) -> AsyncGenerator[sa_async.AsyncSession]:
+    """
+    Get a new database session for the request.
+
+    This dependency creates a new session per request and ensures it's properly
+    committed and closed after the request completes.
+    """
+    session = await SessionAdapter(adapter).new()
+    try:
+        yield session
+        await session.commit()
+    except Exception:
+        await session.rollback()
+        raise
+    finally:
+        await session.close()
+
+
+SessionContext = Annotated[sa_async.AsyncSession, Depends(get_session)]

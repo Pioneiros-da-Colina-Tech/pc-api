@@ -1,39 +1,55 @@
-from decouple import config
+import tomllib
+from pathlib import Path
 
-from app.infra.database.config import ConnectionConfig, PoolConfig
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# LOG_LEVEL = config(
-#     "LOG_LEVEL",
-#     default="info",
-#     cast=Choices(["debug", "info", "warning", "error", "critical"], cast=str),
-# )
-LOCAL = config("LOCAL", default=False, cast=bool)
-SERVER_HOST = str(config("SERVER_HOST", default="0.0.0.0", cast=str))
-SERVER_PORT = config("SERVER_PORT", default=8000, cast=int)
-WORKERS = config("WORKERS", default=5, cast=int)
 
-# JWT Configuration
-JWT_SECRET_KEY = str(
-    config("JWT_SECRET_KEY", default="your-secret-key-change-this", cast=str)
-)
-JWT_ALGORITHM = str(config("JWT_ALGORITHM", default="HS256", cast=str))
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES = config(
-    "JWT_ACCESS_TOKEN_EXPIRE_MINUTES", default=30, cast=int
-)
+def get_version() -> str:
+    pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
+    with open(pyproject_path, "rb") as f:
+        pyproject = tomllib.load(f)
+    return pyproject["project"]["version"]
 
-DB_HOST = str(config("DB_HOST", default="localhost", cast=str))
-DB_PORT = config("DB_PORT", default=5432, cast=int)
-DB_NAME = str(config("DB_NAME", default="", cast=str))
-DB_USER = str(config("DB_USER", default="", cast=str))
-DB_PASSWORD = str(config("DB_PASSWORD", default="", cast=str))
-DB_POOL_SIZE = config("DB_POOL_SIZE", default=3, cast=int)
-DATABASE_CONFIG = ConnectionConfig(
-    host=DB_HOST,
-    port=DB_PORT,
-    name=DB_NAME,
-    user=DB_USER,
-    password=DB_PASSWORD,
-    pool=PoolConfig(
-        size=DB_POOL_SIZE,
-    ),
-)
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
+    pass
+
+
+class ServerSettings(Settings):
+    SERVER_HOST: str = "0.0.0.0"
+    SERVER_PORT: int = 8000
+    LOCAL: bool = False
+    LOG_LEVEL: str = "info"
+    WORKERS: int = 1
+
+
+class DatabaseSettings(Settings):
+    DATABASE_HOST: str = "localhost"
+    DATABASE_PORT: int = 5432
+    DATABASE_NAME: str = "postgres"
+    DATABASE_USER: str = "postgres"
+    DATABASE_PASSWORD: str = "postgres"
+    DATABASE_ECHO: bool = False
+    DATABASE_POOL_SIZE: int = 3
+
+
+class RabbitMQSettings(Settings):
+    RABBITMQ_HOST: str = "localhost"
+    RABBITMQ_PORT: int = 5672
+    RABBITMQ_USER: str = "guest"
+    RABBITMQ_PASSWORD: str = "guest"
+    RABBITMQ_VIRTUAL_HOST: str = "/"
+    RABBITMQ_HEARTBEAT: int = 600
+    RABBITMQ_BLOCKED_CONNECTION_TIMEOUT: int = 300
+    RABBITMQ_CONNECTION_ATTEMPTS: int = 3
+    RABBITMQ_RETRY_DELAY: int = 2
+
+
+server_settings = ServerSettings()
+database_settings = DatabaseSettings()
+rabbitmq_settings = RabbitMQSettings()
+VERSION = get_version()
+ROOT = Path(__file__).resolve().parent

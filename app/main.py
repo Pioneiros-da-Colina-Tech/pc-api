@@ -1,4 +1,4 @@
-from contextlib import asynccontextmanager
+from contextlib import AsyncExitStack, asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -7,34 +7,21 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.api.exc import APIError, api_error_handler
 from app.api.routes import router
 from app.api.secure import secure_middleware
-from app.infra.database.adapter import DatabaseAdapter
-from app.infra.database.config import DatabaseConfig
-from app.settings import (
-    DATABASE_CONFIG,
-    LOCAL,
-    SERVER_HOST,
-    SERVER_PORT,
-    WORKERS,
+from app.infra.database.adapter import (
+    create_session_adapter,
 )
+from app.settings import server_settings
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan event handler for FastAPI"""
-    app.state.session_adapter = DatabaseAdapter(
-        config=DatabaseConfig(connection=DATABASE_CONFIG)
-    )
+    async with AsyncExitStack() as stack:
+        await stack.enter_async_context(create_session_adapter(app))
     yield
 
 
 def get_app() -> FastAPI:
-    """
-    Initializes and configures the FastAPI application.
-
-    This function sets up the basic metadata for the API
-    Returns:
-        FastAPI: The configured FastAPI application instance.
-    """
     app = FastAPI(
         title="Pioneiros da Colina",
         description="Pioneiros da Colina API for pathfinders management",
@@ -44,8 +31,8 @@ def get_app() -> FastAPI:
             "email": "dev@rezendevitor.gmail.com",
             "url": "https://clubes.adventistas.org/br/aps/14062/pioneiros-da-colina/",
         },
-        openapi_url="/openapi.json" if LOCAL else None,
-        docs_url="/docs" if LOCAL else None,
+        openapi_url="/openapi.json" if server_settings.LOCAL else None,
+        docs_url="/docs" if server_settings.LOCAL else None,
         redoc_url=None,
         default_response_class=ORJSONResponse,
         lifespan=lifespan,
@@ -65,12 +52,13 @@ if __name__ == "__main__":
 
     Server(
         "app.main:app",
-        address=SERVER_HOST,
-        port=SERVER_PORT,
+        address=server_settings.SERVER_HOST,
+        port=server_settings.SERVER_PORT,
         reload=False,
         interface=Interfaces.ASGI,
         log_access=True,
         log_level=LogLevels.info,
+        workers=server_settings.WORKERS,
+        backlog=2048,
         loop=Loops.uvloop,
-        workers=WORKERS,
     ).serve()
