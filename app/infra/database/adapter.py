@@ -8,6 +8,7 @@ import sqlalchemy as sa
 import sqlalchemy.ext.asyncio as sa_async
 from fastapi import Depends, FastAPI, Request
 
+from app.api.exc import unexpected_error
 from app.settings import database_settings
 
 from .config import ConnectionConfig, DatabaseConfig, PoolConfig
@@ -144,16 +145,19 @@ async def create_session_adapter(
     """
     Create a session adapter.
     """
-    config = DatabaseConfig(
-        connection=ConnectionConfig(
-            host=database_settings.DATABASE_HOST,
-            port=database_settings.DATABASE_PORT,
-            user=database_settings.DATABASE_USER,
-            password=database_settings.DATABASE_PASSWORD,
-            name=database_settings.DATABASE_NAME,
-            pool=PoolConfig(size=database_settings.DATABASE_POOL_SIZE),
+    try:
+        config = DatabaseConfig(
+            connection=ConnectionConfig(
+                host=database_settings.DATABASE_HOST,
+                port=database_settings.DATABASE_PORT,
+                user=database_settings.DATABASE_USER,
+                password=database_settings.DATABASE_PASSWORD,
+                name=database_settings.DATABASE_NAME,
+                pool=PoolConfig(size=database_settings.DATABASE_POOL_SIZE),
+            )
         )
-    )
+    except Exception as e:
+        raise unexpected_error(str(e))
     async with aclosing(DatabaseAdapter(config=config)) as adapter:
         app.state.session_adapter = adapter
         yield

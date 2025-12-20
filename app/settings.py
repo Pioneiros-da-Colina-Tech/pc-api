@@ -48,8 +48,15 @@ class RabbitMQSettings(Settings):
     RABBITMQ_RETRY_DELAY: int = 2
 
 
+class AuthSettings(Settings):
+    AUTH_SECRET_KEY: str = "secret"
+    AUTH_ALGORITHM: str = "HS256"
+    AUTH_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+
 server_settings = ServerSettings()
 database_settings = DatabaseSettings()
 rabbitmq_settings = RabbitMQSettings()
+auth_settings = AuthSettings()
 VERSION = get_version()
 ROOT = Path(__file__).resolve().parent
