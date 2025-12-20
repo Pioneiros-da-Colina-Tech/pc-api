@@ -8,6 +8,7 @@ nav:
   - Criando Novas Rotas: creating_routes.md
   - Banco de Dados: database.md
   - Documentação API:
+      - Reuniões: Reunioes_doc.md
       - Avaliação Regional: Avaliacao_Regional_doc.md
       - Pontuação: pontuacao-doc.md
       - Regional: Regioanl-doc.md
