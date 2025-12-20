@@ -1,4 +1,3 @@
-from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
@@ -7,9 +6,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pwdlib import PasswordHash
 
+from app.infra.database.adapter import SessionContext
 from app.settings import auth_settings
 
-from .schemas import AuthTokenDataSchema, AuthTokenResponseSchema
+from .repository import UserRepository
+from .schemas import AuthTokenDataSchema, AuthTokenResponseSchema, UserSchema
 
 SECRET_KEY = auth_settings.AUTH_SECRET_KEY
 ALGORITHM = auth_settings.AUTH_ALGORITHM
@@ -54,13 +55,6 @@ async def sign_jwt(document: str) -> AuthTokenResponseSchema:
     )
 
 
-async def protected(func: Callable):
-    async def wrapper(credentials: AuthDependency):
-        func(credentials)
-
-    return wrapper
-
-
 async def decode_token(token: str) -> AuthTokenDataSchema:
     """Decode and validate a JWT token."""
     try:
@@ -87,4 +81,58 @@ async def decode_token(token: str) -> AuthTokenDataSchema:
         )
 
 
+async def get_current_user_from_token(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+    session: SessionContext,
+) -> UserSchema:
+    """
+    Extract and validate the current user from JWT token.
+
+    Args:
+        credentials: HTTP Authorization credentials containing the Bearer token
+        session: Database session context
+
+    Returns:
+        UserSchema: The current authenticated user
+
+    Raises:
+        HTTPException: If token is invalid or user doesn't exist
+    """
+
+    token_data = await decode_token(credentials.credentials)
+    repository = UserRepository(session)
+
+    try:
+        user = await repository.get(document=token_data.document)
+        return user
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+async def get_current_user_document(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+) -> str:
+    """
+    Extract just the user document from JWT token without database lookup.
+    Useful when you only need the user identifier.
+
+    Args:
+        credentials: HTTP Authorization credentials containing the Bearer token
+
+    Returns:
+        str: The user document (CPF) from the token
+
+    Raises:
+        HTTPException: If token is invalid
+    """
+    token_data = await decode_token(credentials.credentials)
+    return token_data.document
+
+
+CurrentUser = Annotated[UserSchema, Depends(get_current_user_from_token)]
+CurrentUserDocument = Annotated[str, Depends(get_current_user_document)]
 AuthDependency = Annotated[HTTPAuthorizationCredentials, Depends(security)]

@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 
 from app.api.schemas import BaseResponseSchema
-from app.auth.handler import protected
 from app.infra.database.adapter import SessionContext
 
 from .domain import AuthLoginUseCase, AuthRegisterUseCase
+from .handler import CurrentUser
 from .schemas import BaseUserSchema, CreateUserSchema
 
 router = APIRouter()
@@ -26,10 +26,9 @@ async def register(
     return await AuthRegisterUseCase(payload, session).execute()
 
 
-@protected
 @router.get("/me")
-async def me() -> BaseResponseSchema:
-    """Get current user information."""
+async def me(current_user: CurrentUser) -> BaseResponseSchema:
+    """Get current user information from JWT token."""
     return BaseResponseSchema(
-        data=None, message="User information retrieved successfully"
+        data=current_user, message="User information retrieved successfully"
     )

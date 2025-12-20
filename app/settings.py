@@ -28,7 +28,7 @@ class ServerSettings(Settings):
 
 class DatabaseSettings(Settings):
     DATABASE_HOST: str = "localhost"
-    DATABASE_PORT: int = 5432
+    DATABASE_PORT: int = 15432
     DATABASE_NAME: str = "postgres"
     DATABASE_USER: str = "postgres"
     DATABASE_PASSWORD: str = "postgres"
