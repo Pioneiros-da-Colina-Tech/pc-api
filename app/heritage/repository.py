@@ -140,11 +140,7 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
     async def update_item(
         self, item_id: UUID, data: UpdateItemSchema
     ) -> ItemSchema:
-        updates: dict = {
-            k: v
-            for k, v in data.model_dump(exclude_unset=True).items()
-            if v is not None
-        }
+        updates: dict = data.model_dump(exclude_unset=True)
         updates["updated_at"] = datetime.now(UTC)
         stmt = (
             sa.update(ItemEntity)
@@ -182,6 +178,7 @@ class RequestRepository:
                     item_name=ri.item.name if ri.item else None,
                 )
                 for ri in (entity.requested_items or [])
+                if ri.deleted_at is None
             ],
             created_at=entity.created_at,
             updated_at=entity.updated_at,
@@ -255,7 +252,10 @@ class RequestRepository:
                     RequestItemEntity.item
                 )
             )
-            .where(RequestEntity.id_ == request_id)
+            .where(
+                RequestEntity.id_ == request_id,
+                RequestEntity.deleted_at.is_(None),
+            )
         )
         result = await self.context.execute(stmt)
         entity = result.scalar_one_or_none()
@@ -266,7 +266,10 @@ class RequestRepository:
     ) -> RequestSchema | None:
         stmt = (
             sa.update(RequestEntity)
-            .where(RequestEntity.id_ == request_id)
+            .where(
+                RequestEntity.id_ == request_id,
+                RequestEntity.deleted_at.is_(None),
+            )
             .values(
                 status=data.status,
                 rejection_reason=data.rejection_reason,

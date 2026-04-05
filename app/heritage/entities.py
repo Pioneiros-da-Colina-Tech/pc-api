@@ -13,6 +13,8 @@ from .concepts import RequestStatusConcept
 
 
 class ItemEntity(Entity, TimestampMixin, UUIDMixin):
+    __tablename__ = "heritage_item"
+
     name: Mapped[str] = mapped_column(sa.Text, nullable=False)
     quantity: Mapped[int] = mapped_column(sa.Integer, nullable=False, default=0)
     acquisition_date: Mapped[date] = mapped_column(sa.Date, nullable=False)
@@ -20,6 +22,8 @@ class ItemEntity(Entity, TimestampMixin, UUIDMixin):
 
 
 class RequestEntity(Entity, TimestampMixin, UUIDMixin):
+    __tablename__ = "heritage_request"
+
     meeting_id: Mapped[UUID] = mapped_column(
         sa.ForeignKey("meetings.id"), nullable=False
     )
@@ -28,7 +32,7 @@ class RequestEntity(Entity, TimestampMixin, UUIDMixin):
     )
 
     status: Mapped[RequestStatusConcept] = mapped_column(
-        sa.Enum(RequestStatusConcept),
+        sa.Enum(RequestStatusConcept, values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         default=RequestStatusConcept.PENDING,
     )
@@ -41,11 +45,13 @@ class RequestEntity(Entity, TimestampMixin, UUIDMixin):
 
 
 class RequestItemEntity(Entity, TimestampMixin, UUIDMixin):
+    __tablename__ = "heritage_request_item"
+
     request_id: Mapped[UUID] = mapped_column(
-        sa.ForeignKey("request.id"), nullable=False
+        sa.ForeignKey("heritage_request.id"), nullable=False
     )
     item_id: Mapped[UUID] = mapped_column(
-        sa.ForeignKey("item.id"), nullable=False
+        sa.ForeignKey("heritage_item.id"), nullable=False
     )
     quantity: Mapped[int] = mapped_column(sa.Integer, nullable=False)
     acquisition_date: Mapped[date | None] = mapped_column(
