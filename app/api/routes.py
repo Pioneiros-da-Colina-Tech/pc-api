@@ -4,6 +4,7 @@ from app.attendance.routes import router as attendance_router
 from app.auth.routes import router as auth_router
 from app.classes.routes import router as classes_router
 from app.club_year.routes import router as club_year_router
+from app.heritage.routes import router as heritage_router
 from app.meetings.routes import router as meetings_router
 from app.roles.routes import router as roles_router
 from app.scores.routes import router as scores_router
@@ -36,3 +37,4 @@ router.include_router(
     specialties_router, prefix="/specialties", tags=["Specialties"]
 )
 router.include_router(scores_router, prefix="/scores", tags=["Scores"])
+router.include_router(heritage_router, prefix="/heritage", tags=["Heritage"])
