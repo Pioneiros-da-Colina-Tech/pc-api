@@ -12,3 +12,5 @@ class UsersEntity(Entity, TimestampMixin, UUIDMixin):
         sa.String(11), nullable=False, unique=True, index=True
     )
     birth_date: Mapped[date] = mapped_column(sa.Date, nullable=False)
+    name: Mapped[str | None] = mapped_column(sa.String(255), nullable=True)
+    codigo_sgc: Mapped[str | None] = mapped_column(sa.String(20), nullable=True)

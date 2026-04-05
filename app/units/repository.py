@@ -8,12 +8,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.exc import does_not_exist
 from app.infra.database.repository import Repository
 
+from app.auth.entities import UsersEntity
+
 from .concepts import UnitRole
 from .entities import UnitEntity, UnitMemberEntity
 from .schemas import (
     AddUnitMemberSchema,
     CreateUnitSchema,
     UnitMemberSchema,
+    UnitMemberWithUserSchema,
     UnitSchema,
     UpdateUnitSchema,
 )
@@ -132,13 +135,35 @@ class UnitMemberRepository(Repository[UnitMemberEntity, UnitMemberSchema]):
 
     async def list_members(
         self, unit_id: UUID, club_year_id: str | None = None
-    ) -> list[UnitMemberSchema]:
-        statement = sa.select(UnitMemberEntity).where(
-            UnitMemberEntity.unit_id == unit_id
+    ) -> list[UnitMemberWithUserSchema]:
+        statement = (
+            sa.select(
+                UnitMemberEntity,
+                UsersEntity.name.label("user_name"),
+                UsersEntity.document.label("user_document"),
+                UsersEntity.codigo_sgc.label("user_codigo_sgc"),
+            )
+            .join(UsersEntity, UsersEntity.id_ == UnitMemberEntity.user_id)
+            .where(UnitMemberEntity.unit_id == unit_id)
         )
         if club_year_id is not None:
             statement = statement.where(
                 UnitMemberEntity.club_year_id == club_year_id
             )
         result = await self.context.execute(statement)
-        return [self.to_schema(e) for e in result.scalars().all()]
+        rows = result.all()
+        return [
+            UnitMemberWithUserSchema(
+                unit_id=row.UnitMemberEntity.unit_id,
+                user_id=row.UnitMemberEntity.user_id,
+                club_year_id=row.UnitMemberEntity.club_year_id,
+                role=UnitRole(row.UnitMemberEntity.role),
+                created_at=row.UnitMemberEntity.created_at,
+                updated_at=row.UnitMemberEntity.updated_at,
+                deleted_at=row.UnitMemberEntity.deleted_at,
+                user_name=row.user_name,
+                user_document=row.user_document,
+                user_codigo_sgc=row.user_codigo_sgc,
+            )
+            for row in rows
+        ]

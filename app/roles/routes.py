@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Query, status
 
 from app.api.schemas import BaseResponseSchema
@@ -5,11 +7,14 @@ from app.auth.guards import AdminGuard
 from app.auth.handler import AuthDependency, decode_token
 from app.infra.database.adapter import SessionContext
 
+from app.auth.schemas import UpdateUserSchema
+
 from .domain import (
     AssignRoleUseCase,
     ListRolesUseCase,
     ListUsersUseCase,
     RevokeRoleUseCase,
+    UpdateUserUseCase,
 )
 from .schemas import AssignRoleSchema, RevokeRoleSchema
 
@@ -43,6 +48,17 @@ async def revoke_role(
 ) -> BaseResponseSchema:
     """Revoke a role from a user. Only Diretor, Secretaria and Tesouraria can do this."""
     return await RevokeRoleUseCase(payload, session).execute()
+
+
+@router.put("/users/{user_id}", status_code=status.HTTP_200_OK)
+async def update_user(
+    user_id: UUID,
+    payload: UpdateUserSchema,
+    session: SessionContext,
+    _: AdminGuard,
+) -> BaseResponseSchema:
+    """Replace user editable fields (name, codigo_sgc). Only admin roles can do this."""
+    return await UpdateUserUseCase(user_id, payload, session).execute()
 
 
 @router.get("/users", status_code=status.HTTP_200_OK)

@@ -26,6 +26,23 @@ class CreateMeetingUseCase(ApiDomain):
         result = await self.repository.create_meeting(self.payload)
         return BaseResponseSchema(
             status=status.HTTP_201_CREATED,
-            message="Meeting created successfully inside domain",
+            message="Meeting created successfully",
+            data=result,
+        )
+
+
+@dataclass
+class ListMeetingsUseCase(ApiDomain):
+    session: AsyncSession
+
+    @cached_property
+    def repository(self) -> MeetingsRepository:
+        return MeetingsRepository(self.session)
+
+    @override
+    async def execute(self) -> BaseResponseSchema:
+        result = await self.repository.fetch_all()
+        return BaseResponseSchema(
+            message="Meetings retrieved successfully",
             data=result,
         )

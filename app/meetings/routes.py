@@ -4,7 +4,7 @@ from app.api.schemas import BaseResponseSchema
 from app.auth.handler import AuthDependency
 from app.infra.database.adapter import SessionContext
 
-from .domain import CreateMeetingUseCase
+from .domain import CreateMeetingUseCase, ListMeetingsUseCase
 from .schemas import CreateMeetingSchema
 
 router = APIRouter()
@@ -21,18 +21,16 @@ async def create_meeting(
 
 
 @router.get("")
-async def get_meetings(_: AuthDependency) -> BaseResponseSchema:
-    """Get all meetings for the authenticated user."""
-    return BaseResponseSchema(
-        message="Meetings retrieved successfully",
-        data={"meetings": []},
-    )
+async def get_meetings(
+    session: SessionContext, _: AuthDependency
+) -> BaseResponseSchema:
+    """Get all meetings."""
+    return await ListMeetingsUseCase(session).execute()
 
 
 @router.get("/my-meetings")
-async def get_my_meetings(_: AuthDependency) -> BaseResponseSchema:
-    """Get meetings created by the current user."""
-    return BaseResponseSchema(
-        message='Meetings for user "" retrieved successfully',
-        data={"meetings": []},
-    )
+async def get_my_meetings(
+    session: SessionContext, _: AuthDependency
+) -> BaseResponseSchema:
+    """Get meetings for the authenticated user."""
+    return await ListMeetingsUseCase(session).execute()

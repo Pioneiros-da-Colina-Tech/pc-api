@@ -1,8 +1,12 @@
 from contextlib import AsyncExitStack, asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
 from loguru import logger
+from psycopg.errors import ForeignKeyViolation, UniqueViolation
+from sqlalchemy.exc import IntegrityError
+from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.api.exc import APIError, api_error_handler
@@ -22,6 +26,39 @@ async def lifespan(app: FastAPI):
     async with AsyncExitStack() as stack:
         await stack.enter_async_context(create_session_adapter(app))
         yield
+
+
+async def integrity_error_handler(_: Request, exc: IntegrityError) -> ORJSONResponse:
+    cause = exc.orig
+    if isinstance(cause, ForeignKeyViolation):
+        return ORJSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={
+                "message": "Related record not found",
+                "detail": str(cause).split("\n")[0],
+                "fields": [],
+                "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY,
+            },
+        )
+    if isinstance(cause, UniqueViolation):
+        return ORJSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={
+                "message": "Record already exists",
+                "detail": str(cause).split("\n")[0],
+                "fields": [],
+                "status_code": status.HTTP_409_CONFLICT,
+            },
+        )
+    return ORJSONResponse(
+        status_code=status.HTTP_409_CONFLICT,
+        content={
+            "message": "Database integrity error",
+            "detail": str(cause).split("\n")[0] if cause else None,
+            "fields": [],
+            "status_code": status.HTTP_409_CONFLICT,
+        },
+    )
 
 
 def get_app() -> FastAPI:
@@ -45,7 +82,8 @@ def get_app() -> FastAPI:
         else None,
         lifespan=lifespan,
     )
-    app.add_exception_handler(APIError, api_error_handler)  # pyright: ignore[reportArgumentType]]
+    app.add_exception_handler(APIError, api_error_handler)  # pyright: ignore[reportArgumentType]
+    app.add_exception_handler(IntegrityError, integrity_error_handler)  # pyright: ignore[reportArgumentType]
     app.add_middleware(BaseHTTPMiddleware, dispatch=secure_middleware)
     app.add_middleware(
         CORSMiddleware,

@@ -55,3 +55,9 @@ class UnitMemberSchema(BaseModel):
     created_at: datetime
     updated_at: datetime | None
     deleted_at: datetime | None
+
+
+class UnitMemberWithUserSchema(UnitMemberSchema):
+    user_name: str | None
+    user_document: str
+    user_codigo_sgc: str | None
