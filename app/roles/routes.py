@@ -5,9 +5,8 @@ from fastapi import APIRouter, Query, status
 from app.api.schemas import BaseResponseSchema
 from app.auth.guards import AdminGuard
 from app.auth.handler import AuthDependency, decode_token
-from app.infra.database.adapter import SessionContext
-
 from app.auth.schemas import UpdateUserSchema
+from app.infra.database.adapter import SessionContext
 
 from .domain import (
     AssignRoleUseCase,

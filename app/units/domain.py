@@ -165,7 +165,9 @@ class AddUnitMemberUseCase(ApiDomain):
     async def execute(self) -> BaseResponseSchema:
         if not await self.unit_repository.exists(id_=self.unit_id):
             raise does_not_exist("Unit")
-        if not await self.club_year_repository.exists(id_=self.payload.club_year_id):
+        if not await self.club_year_repository.exists(
+            id_=self.payload.club_year_id
+        ):
             raise does_not_exist(f"ClubYear '{self.payload.club_year_id}'")
         if await self.repository.exists(
             unit_id=self.unit_id,

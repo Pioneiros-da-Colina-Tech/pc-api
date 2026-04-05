@@ -7,11 +7,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.api.domain import ApiDomain
-from app.api.exc import does_not_exist, validation_error
+from app.api.exc import does_not_exist
 from app.api.schemas import BaseResponseSchema
 from app.attendance.concepts import AttendanceStatus
 from app.attendance.repository import AttendanceRepository
-from app.attendance.schemas import RecordAttendanceSchema, UpdateAttendanceSchema
+from app.attendance.schemas import (
+    RecordAttendanceSchema,
+    UpdateAttendanceSchema,
+)
 from app.auth.repository import UserRepository
 from app.meetings.repository import MeetingsRepository
 
@@ -60,7 +63,9 @@ class SubmitMeetingScoresUseCase(ApiDomain):
                 raise does_not_exist(f"User {item.user_id}")
 
             # Upsert score
-            score = await self.score_repo.upsert_meeting_score(self.meeting_id, item)
+            score = await self.score_repo.upsert_meeting_score(
+                self.meeting_id, item
+            )
             results.append(score)
 
             # Keep attendance table in sync
@@ -69,13 +74,13 @@ class SubmitMeetingScoresUseCase(ApiDomain):
                 meeting_id=self.meeting_id, user_id=item.user_id
             )
             if already_exists:
-                await self.attendance_repo.update_attendance(
+                _ = await self.attendance_repo.update_attendance(
                     self.meeting_id,
                     item.user_id,
                     UpdateAttendanceSchema(attendance_status=att_status),
                 )
             else:
-                await self.attendance_repo.record_attendance(
+                _ = await self.attendance_repo.record_attendance(
                     self.meeting_id,
                     RecordAttendanceSchema(
                         user_id=item.user_id, attendance_status=att_status
@@ -154,7 +159,10 @@ class CreateBonusUseCase(ApiDomain):
 
         if self.payload.unit_id:
             from app.units.repository import UnitRepository
-            if not await UnitRepository(self.session).exists(id_=self.payload.unit_id):
+
+            if not await UnitRepository(self.session).exists(
+                id_=self.payload.unit_id
+            ):
                 raise does_not_exist("Unit")
 
         result = await self.score_repo.create_bonus(self.payload)

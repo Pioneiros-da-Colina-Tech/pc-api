@@ -53,5 +53,3 @@ class UserSpecialtySchema(BaseModel):
     created_at: datetime = Field(examples=[datetime(2024, 1, 1)])
     updated_at: datetime | None = Field(examples=[datetime(2024, 1, 1)])
     deleted_at: datetime | None = Field(examples=[datetime(2024, 1, 1)])
-
-

@@ -6,9 +6,8 @@ import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.exc import does_not_exist
-from app.infra.database.repository import Repository
-
 from app.auth.entities import UsersEntity
+from app.infra.database.repository import Repository
 
 from .concepts import UnitRole
 from .entities import UnitEntity, UnitMemberEntity

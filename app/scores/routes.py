@@ -31,7 +31,9 @@ async def submit_meeting_scores(
     _: AttendanceGuard,
 ) -> BaseResponseSchema:
     """Batch-submit per-user scores for a meeting (also syncs attendance status)."""
-    return await SubmitMeetingScoresUseCase(meeting_id, payload, session).execute()
+    return await SubmitMeetingScoresUseCase(
+        meeting_id, payload, session
+    ).execute()
 
 
 @router.get("/meetings/{meeting_id}", tags=["Scores"])

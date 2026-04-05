@@ -6,7 +6,12 @@ import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.entities import UsersEntity
-from app.auth.schemas import CreateUserSchema, UpdateUserSchema, UserSchema, UserWithUnitSchema
+from app.auth.schemas import (
+    CreateUserSchema,
+    UpdateUserSchema,
+    UserSchema,
+    UserWithUnitSchema,
+)
 from app.infra.database.repository import Repository
 from app.units.entities import UnitEntity, UnitMemberEntity
 
@@ -41,17 +46,24 @@ class UserRepository(Repository[UsersEntity, UserSchema]):
             deleted_at=entity.deleted_at,
         )
 
-    async def update_user(self, user_id: UUID, payload: UpdateUserSchema) -> UserSchema:
+    async def update_user(
+        self, user_id: UUID, payload: UpdateUserSchema
+    ) -> UserSchema:
         stmt = (
             sa.update(UsersEntity)
             .where(UsersEntity.id_ == user_id, UsersEntity.deleted_at.is_(None))
-            .values(name=payload.name, codigo_sgc=payload.codigo_sgc, updated_at=datetime.now(UTC))
+            .values(
+                name=payload.name,
+                codigo_sgc=payload.codigo_sgc,
+                updated_at=datetime.now(UTC),
+            )
             .returning(UsersEntity)
         )
         result = await self.context.execute(stmt)
         entity = result.scalars().first()
         if entity is None:
             from app.api.exc import does_not_exist
+
             raise does_not_exist("User")
         return self.to_schema(entity)
 
@@ -104,7 +116,9 @@ class UserRepository(Repository[UsersEntity, UserSchema]):
         Search active users (with name/CPF filter) and enrich each result
         with their most-recent unit assignment (nullable).
         """
-        items, total = await self.search(query=query, page=page, page_size=page_size)
+        items, total = await self.search(
+            query=query, page=page, page_size=page_size
+        )
         if not items:
             return [], total
 
