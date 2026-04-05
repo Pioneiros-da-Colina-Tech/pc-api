@@ -7,9 +7,12 @@ from app.settings import database_settings
 
 
 class PoolConfig(BaseModel):
-    size: int = 10
-    max_overflow: int = 5
-    recycle: int = 3600
+    size: int = database_settings.DATABASE_POOL_SIZE
+    max_overflow: int = database_settings.DATABASE_POOL_MAX_OVERFLOW
+    recycle: int = database_settings.DATABASE_POOL_RECYCLE
+    pre_ping: bool = database_settings.DATABASE_POOL_PRE_PING
+    pool_timeout: int = database_settings.DATABASE_POOL_TIMEOUT
+    pool_reset_on_return: str = database_settings.DATABASE_POOL_RESET_ON_RETURN
 
 
 class ConnectionConfig(BaseModel):
