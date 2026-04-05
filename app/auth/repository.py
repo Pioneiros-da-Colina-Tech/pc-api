@@ -60,9 +60,7 @@ class UserRepository(Repository[UsersEntity, UserSchema]):
         base = sa.select(UsersEntity).where(UsersEntity.deleted_at.is_(None))
 
         if query:
-            base = base.where(
-                UsersEntity.document.ilike(f"%{query}%")
-            )
+            base = base.where(UsersEntity.document.ilike(f"%{query}%"))
 
         count_stmt = sa.select(sa.func.count()).select_from(base.subquery())
         count_result = await self.context.execute(count_stmt)

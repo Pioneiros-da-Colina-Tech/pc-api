@@ -116,7 +116,12 @@ class ListUsersUseCase(ApiDomain):
         return BaseResponseSchema(
             status=status.HTTP_200_OK,
             message="Users retrieved successfully",
-            data={"items": items, "total": total, "page": self.page, "page_size": self.page_size},
+            data={
+                "items": items,
+                "total": total,
+                "page": self.page,
+                "page_size": self.page_size,
+            },
         )
 
 

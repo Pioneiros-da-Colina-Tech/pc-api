@@ -11,6 +11,9 @@ from .handler import AuthDependency, decode_token
 from .repository import UserRepository
 
 _ADMIN_ROLES = frozenset({Role.DIRETOR, Role.SECRETARIA, Role.TESOURARIA})
+_ATTENDANCE_ROLES = frozenset(
+    {Role.DIRETOR, Role.SECRETARIA, Role.CONSELHEIRO_UNIDADE}
+)
 
 
 def require_roles(*roles: Role):
@@ -36,3 +39,4 @@ def require_roles(*roles: Role):
 
 
 AdminGuard = Annotated[None, Depends(require_roles(*_ADMIN_ROLES))]
+AttendanceGuard = Annotated[None, Depends(require_roles(*_ATTENDANCE_ROLES))]
