@@ -19,7 +19,13 @@ class ScreenEntity(Entity, VarCharMixin):
 
 
 class RoleScreenEntity(Entity):
-    """Many-to-many join between roles and screens they can access."""
+    """
+    Many-to-many join between roles and screens they can access.
+
+    Intentionally inherits only from Entity (not UUIDMixin / VarCharMixin)
+    so no extra `id_` column is introduced.  The composite PK is formed by
+    (role_id, screen_id) below, matching the role_screen migration exactly.
+    """
 
     role_id: Mapped[str] = mapped_column(
         sa.ForeignKey("role.id", ondelete="CASCADE"),

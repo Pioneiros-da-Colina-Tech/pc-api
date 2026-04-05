@@ -32,7 +32,7 @@ class SessionAdapter:
         """
         Check if the session is closed.
         """
-        return client.is_active
+        return not client.is_active
 
     async def release(self, client: sa_async.AsyncSession) -> None:
         """

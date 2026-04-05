@@ -117,6 +117,7 @@ class Repository[T: Entity, S: BaseModel]:
         statement = (
             sa.select(self.entity)
             .filter_by(**filters)
+            .order_by(*self.entity.__mapper__.primary_key)
             .offset(offset)
             .limit(index_size)
         )

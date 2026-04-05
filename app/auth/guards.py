@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from app.api.exc import unauthorized_error
+from app.api.exc import unauthorized_error as forbidden_error
 from app.infra.database.adapter import SessionContext
 from app.roles.concepts import Role
 from app.roles.repository import UserRoleRepository
@@ -16,8 +16,8 @@ _ADMIN_ROLES = frozenset({Role.DIRETOR, Role.SECRETARIA, Role.TESOURARIA})
 def require_roles(*roles: Role):
     """
     FastAPI dependency factory.
-    Raises 403 if the authenticated user does not hold at least one of the
-    given roles.
+    Raises HTTP 403 Forbidden if the authenticated user does not hold at least
+    one of the given roles.
     """
     allowed = frozenset(roles)
 
@@ -30,7 +30,7 @@ def require_roles(*roles: Role):
             user.id_
         )
         if not frozenset(user_roles) & allowed:
-            raise unauthorized_error()
+            raise forbidden_error()
 
     return guard
 
