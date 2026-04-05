@@ -8,7 +8,6 @@ from sqlalchemy.orm import selectinload
 
 from app.heritage.concepts import RequestStatusConcept
 from app.heritage.entities import ItemEntity, RequestEntity, RequestItemEntity
-
 from app.heritage.schemas import (
     CreateItemSchema,
     CreateRequestSchema,
@@ -84,9 +83,13 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
         committed_sq = (
             sa.select(
                 RequestItemEntity.item_id,
-                sa.func.coalesce(sa.func.sum(RequestItemEntity.quantity), 0).label("committed"),
+                sa.func.coalesce(
+                    sa.func.sum(RequestItemEntity.quantity), 0
+                ).label("committed"),
             )
-            .join(RequestEntity, RequestItemEntity.request_id == RequestEntity.id_)
+            .join(
+                RequestEntity, RequestItemEntity.request_id == RequestEntity.id_
+            )
             .where(
                 RequestEntity.status.in_(active_statuses),
                 RequestItemEntity.deleted_at.is_(None),
@@ -101,7 +104,9 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
             base_where.append(ItemEntity.name.ilike(f"%{name}%"))
 
         count_stmt = (
-            sa.select(sa.func.count()).select_from(ItemEntity).where(*base_where)
+            sa.select(sa.func.count())
+            .select_from(ItemEntity)
+            .where(*base_where)
         )
         total = (await self.context.execute(count_stmt)).scalar_one()
 
@@ -109,7 +114,9 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
         stmt = (
             sa.select(
                 ItemEntity,
-                sa.func.coalesce(committed_sq.c.committed, 0).label("committed"),
+                sa.func.coalesce(committed_sq.c.committed, 0).label(
+                    "committed"
+                ),
             )
             .outerjoin(committed_sq, ItemEntity.id_ == committed_sq.c.item_id)
             .where(*base_where)
@@ -126,10 +133,18 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
             )
             for row in rows
         ]
-        return ItemPageSchema(items=items, total=total, page=page, page_size=page_size)
+        return ItemPageSchema(
+            items=items, total=total, page=page, page_size=page_size
+        )
 
-    async def update_item(self, item_id: UUID, data: UpdateItemSchema) -> ItemSchema:
-        updates: dict = {k: v for k, v in data.model_dump(exclude_unset=True).items() if v is not None}
+    async def update_item(
+        self, item_id: UUID, data: UpdateItemSchema
+    ) -> ItemSchema:
+        updates: dict = {
+            k: v
+            for k, v in data.model_dump(exclude_unset=True).items()
+            if v is not None
+        }
         updates["updated_at"] = datetime.now(UTC)
         stmt = (
             sa.update(ItemEntity)
@@ -141,6 +156,7 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
         updated = result.scalars().first()
         if updated is None:
             from app.api.exc import does_not_exist
+
             raise does_not_exist("Item")
         return self.to_schema(updated)
 

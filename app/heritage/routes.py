@@ -38,7 +38,9 @@ async def list_items(
     page_size: int = Query(default=20, ge=1, le=100),
 ) -> BaseResponseSchema:
     """List heritage items with optional search and pagination."""
-    return await ListItemsUseCase(session, name=name, page=page, page_size=page_size).execute()
+    return await ListItemsUseCase(
+        session, name=name, page=page, page_size=page_size
+    ).execute()
 
 
 @router.post("/items", status_code=status.HTTP_201_CREATED)

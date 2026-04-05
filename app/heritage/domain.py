@@ -71,7 +71,9 @@ class UpdateItemUseCase(ApiDomain):
     @override
     async def execute(self) -> BaseResponseSchema:
         item = await self.repo.update_item(self.item_id, self.payload)
-        return BaseResponseSchema(message="Item updated successfully", data=item)
+        return BaseResponseSchema(
+            message="Item updated successfully", data=item
+        )
 
 
 @dataclass

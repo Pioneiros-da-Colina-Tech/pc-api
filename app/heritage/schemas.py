@@ -54,10 +54,15 @@ class CreateRequestSchema(BaseModel):
 
 class UpdateItemSchema(BaseModel):
     name: str | None = Field(
-        default=None, examples=["Barraca Iglú 4 Pessoas"], min_length=2, max_length=150
+        default=None,
+        examples=["Barraca Iglú 4 Pessoas"],
+        min_length=2,
+        max_length=150,
     )
     quantity: int | None = Field(default=None, examples=[5], ge=0)
-    acquisition_date: date | None = Field(default=None, examples=[date(2023, 3, 15)])
+    acquisition_date: date | None = Field(
+        default=None, examples=[date(2023, 3, 15)]
+    )
     description: str | None = Field(default=None, examples=["Modelo Mor"])
 
 
