@@ -124,7 +124,7 @@ app/specialties/
 
 1. **Unique Specialty Codes**: Each specialty must have a unique code
 2. **User-Specialty Relationship**: A user can only be assigned the same specialty once
-3. **Cascading Deletes**: Deleting a user or specialty will remove associated user_specialty records
+3. **Cascading Deletes**: Deleting a user or specialty will remove associated user_specialties records
 4. **Soft Deletes**: Records are marked as deleted rather than physically removed
 5. **Search**: Supports partial matching on both code and name fields (case-insensitive)
 6. **Pagination**: All list endpoints support pagination to handle large datasets efficiently

@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.api.domain import ApiDomain
-from app.api.exc import does_not_exist
+from app.api.exc import already_exists, does_not_exist
 from app.api.schemas import BaseResponseSchema
 from app.auth.repository import UserRepository
 
@@ -157,6 +157,14 @@ class AssignSpecialtyToUserUseCase(ApiDomain):
             id_=self.payload.specialty_id
         ):
             raise does_not_exist("Specialty")
+
+        # Check for duplicate assignment
+        existing = await self.repository.get_by_user_and_specialty(
+            user_id=self.user_id,
+            specialty_id=self.payload.specialty_id,
+        )
+        if existing is not None:
+            raise already_exists("User specialty")
 
         result = await self.repository.create_user_specialty(
             self.user_id, self.payload

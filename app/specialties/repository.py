@@ -64,7 +64,7 @@ class SpecialtiesRepository(Repository[SpecialtiesEntity, SpecialtySchema]):
             sa.update(SpecialtiesEntity)
             .filter_by(**filters)
             .values(
-                **data.model_dump(exclude_unset=True),
+                **data.model_dump(exclude_unset=True, exclude_none=True),
                 updated_at=datetime.now(UTC),
             )
             .returning(SpecialtiesEntity)
@@ -152,6 +152,21 @@ class UserSpecialtiesRepository(
             deleted_at=None,
         )
         return await self.create(user_specialty)
+
+    async def get_by_user_and_specialty(
+        self, user_id: UUID, specialty_id: UUID
+    ) -> UserSpecialtySchema | None:
+        statement = (
+            sa.select(UserSpecialtiesEntity)
+            .where(
+                UserSpecialtiesEntity.user_id == user_id,
+                UserSpecialtiesEntity.specialty_id == specialty_id,
+            )
+            .limit(1)
+        )
+        result = await self.context.execute(statement)
+        entity = result.scalars().first()
+        return self.to_schema(entity) if entity is not None else None
 
     async def fetch_user_specialties(
         self, user_id: UUID

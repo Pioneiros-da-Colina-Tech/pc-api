@@ -55,7 +55,3 @@ class UserSpecialtySchema(BaseModel):
     deleted_at: datetime | None = Field(examples=[datetime(2024, 1, 1)])
 
 
-class UserSpecialtyWithDetailsSchema(UserSpecialtySchema):
-    """User specialty with full specialty details."""
-
-    specialty: SpecialtySchema
