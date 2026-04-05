@@ -6,6 +6,7 @@ from app.classes.routes import router as classes_router
 from app.club_year.routes import router as club_year_router
 from app.meetings.routes import router as meetings_router
 from app.roles.routes import router as roles_router
+from app.specialties.routes import router as specialties_router
 from app.units.routes import router as units_router
 
 from .schemas import BaseResponseSchema
@@ -30,3 +31,6 @@ router.include_router(
 )
 router.include_router(classes_router, prefix="/classes", tags=["Classes"])
 router.include_router(units_router, prefix="/units", tags=["Units"])
+router.include_router(
+    specialties_router, prefix="/specialties", tags=["Specialties"]
+)
