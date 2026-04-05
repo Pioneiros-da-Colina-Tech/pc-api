@@ -28,33 +28,43 @@ async def lifespan(app: FastAPI):
         yield
 
 
-async def integrity_error_handler(_: Request, exc: IntegrityError) -> ORJSONResponse:
+async def integrity_error_handler(
+    _: Request, exc: IntegrityError
+) -> ORJSONResponse:
     cause = exc.orig
     if isinstance(cause, ForeignKeyViolation):
+        # Log full DB error for observability without exposing details to clients
+        logger.exception("Integrity error (ForeignKeyViolation): {}", cause)
         return ORJSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={
                 "message": "Related record not found",
-                "detail": str(cause).split("\n")[0],
+                # Do not expose raw DB error text to clients
+                "detail": "A related resource referenced by this request does not exist.",
                 "fields": [],
                 "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY,
             },
         )
     if isinstance(cause, UniqueViolation):
+        # Log full DB error for observability without exposing details to clients
+        logger.exception("Integrity error (UniqueViolation): {}", cause)
         return ORJSONResponse(
             status_code=status.HTTP_409_CONFLICT,
             content={
                 "message": "Record already exists",
-                "detail": str(cause).split("\n")[0],
+                # Do not expose raw DB error text to clients
+                "detail": "A record with the same unique fields already exists.",
                 "fields": [],
                 "status_code": status.HTTP_409_CONFLICT,
             },
         )
+    # Log full DB error for observability
+    logger.exception("Integrity error (Unknown): {}", cause)
     return ORJSONResponse(
         status_code=status.HTTP_409_CONFLICT,
         content={
             "message": "Database integrity error",
-            "detail": str(cause).split("\n")[0] if cause else None,
+            "detail": "A database constraint was violated.",
             "fields": [],
             "status_code": status.HTTP_409_CONFLICT,
         },

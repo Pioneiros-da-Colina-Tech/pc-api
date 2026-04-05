@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status
 
 from app.api.schemas import BaseResponseSchema
-from app.auth.handler import AuthDependency
+from app.auth.handler import AuthDependency, CurrentUser
 from app.infra.database.adapter import SessionContext
 
 from .domain import CreateMeetingUseCase, ListMeetingsUseCase
@@ -30,7 +30,9 @@ async def get_meetings(
 
 @router.get("/my-meetings")
 async def get_my_meetings(
-    session: SessionContext, _: AuthDependency
+    session: SessionContext, current_user: CurrentUser
 ) -> BaseResponseSchema:
     """Get meetings for the authenticated user."""
-    return await ListMeetingsUseCase(session).execute()
+    return await ListMeetingsUseCase(
+        session=session, user_id=current_user.id_
+    ).execute()

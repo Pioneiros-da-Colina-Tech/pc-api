@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from functools import cached_property
 from typing import override
+from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -34,6 +35,7 @@ class CreateMeetingUseCase(ApiDomain):
 @dataclass
 class ListMeetingsUseCase(ApiDomain):
     session: AsyncSession
+    user_id: UUID | None = None
 
     @cached_property
     def repository(self) -> MeetingsRepository:
@@ -41,7 +43,10 @@ class ListMeetingsUseCase(ApiDomain):
 
     @override
     async def execute(self) -> BaseResponseSchema:
-        result = await self.repository.fetch_all()
+        if self.user_id:
+            result = await self.repository.fetch_meetings_for_user(self.user_id)
+        else:
+            result = await self.repository.fetch_all()
         return BaseResponseSchema(
             message="Meetings retrieved successfully",
             data=result,

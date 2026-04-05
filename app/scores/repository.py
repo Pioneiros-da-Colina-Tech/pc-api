@@ -4,6 +4,7 @@ from uuid import UUID, uuid4
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.exc import validation_error
 from app.auth.entities import UsersEntity
 from app.meetings.entities import MeetingsEntity
 from app.units.entities import UnitEntity, UnitMemberEntity
@@ -76,7 +77,9 @@ class ScoreRepository:
 
         return self._score_to_schema(entity, meeting_id)
 
-    async def get_meeting_scores(self, meeting_id: UUID) -> list[MeetingScoreSchema]:
+    async def get_meeting_scores(
+        self, meeting_id: UUID
+    ) -> list[MeetingScoreSchema]:
         stmt = sa.select(MeetingScoreEntity).where(
             MeetingScoreEntity.meeting_id == meeting_id
         )
@@ -106,7 +109,9 @@ class ScoreRepository:
     # Bonus scores
     # ------------------------------------------------------------------
 
-    async def create_bonus(self, data: BonusScoreCreateSchema) -> BonusScoreSchema:
+    async def create_bonus(
+        self, data: BonusScoreCreateSchema
+    ) -> BonusScoreSchema:
         entity = BonusScoreEntity(
             id_=uuid4(),
             user_id=data.user_id,
@@ -156,7 +161,12 @@ class ScoreRepository:
     async def get_ranking(
         self, year: str, semester: int
     ) -> RankingResponseSchema:
-        year_int = int(year)
+        try:
+            year_int = int(year)
+        except ValueError:
+            raise validation_error(
+                f"Invalid year format: '{year}'. Year must be a valid number."
+            )
         if semester == 1:
             start = date(year_int, 1, 1)
             end = date(year_int, 6, 30)
@@ -180,7 +190,9 @@ class ScoreRepository:
                 sa.select(
                     MeetingScoreEntity.user_id,
                     sa.func.sum(MeetingScoreEntity.presenca).label("presenca"),
-                    sa.func.sum(MeetingScoreEntity.pontualidade).label("pontualidade"),
+                    sa.func.sum(MeetingScoreEntity.pontualidade).label(
+                        "pontualidade"
+                    ),
                     sa.func.sum(MeetingScoreEntity.uniforme).label("uniforme"),
                     sa.func.sum(MeetingScoreEntity.modestia).label("modestia"),
                 )
@@ -203,7 +215,11 @@ class ScoreRepository:
             BonusScoreEntity.user_id.isnot(None),
         )
         for row in (await self.session.execute(bonus_stmt)).scalars():
-            user_bonus[row.user_id] = user_bonus.get(row.user_id, 0) + row.points
+            # user_id is filtered to not be None by the query
+            assert row.user_id is not None
+            user_bonus[row.user_id] = (  # type: ignore[index]
+                user_bonus.get(row.user_id, 0) + row.points  # type: ignore[arg-type]
+            )
 
         # 4 – unit bonus totals for this period
         unit_bonus: dict[UUID, int] = {}
@@ -213,10 +229,16 @@ class ScoreRepository:
             BonusScoreEntity.unit_id.isnot(None),
         )
         for row in (await self.session.execute(unit_bonus_stmt)).scalars():
-            unit_bonus[row.unit_id] = unit_bonus.get(row.unit_id, 0) + row.points
+            # unit_id is filtered to not be None by the query
+            assert row.unit_id is not None
+            unit_bonus[row.unit_id] = (  # type: ignore[index]
+                unit_bonus.get(row.unit_id, 0) + row.points  # type: ignore[arg-type]
+            )
 
         # 5 – unit membership for this year (use year as club_year_id)
-        user_unit: dict[UUID, tuple[UUID, str, str]] = {}  # user_id → (unit_id, unit_name, unit_role)
+        user_unit: dict[
+            UUID, tuple[UUID, str, str]
+        ] = {}  # user_id → (unit_id, unit_name, unit_role)
         membership_stmt = (
             sa.select(
                 UnitMemberEntity.user_id,
@@ -232,7 +254,9 @@ class ScoreRepository:
 
         # 6 – user details for all users that appear in scores or bonuses
         all_user_ids = set(user_scores) | set(user_bonus)
-        user_info: dict[UUID, tuple[str | None, str]] = {}  # user_id → (name, document)
+        user_info: dict[
+            UUID, tuple[str | None, str]
+        ] = {}  # user_id → (name, document)
         if all_user_ids:
             users_stmt = sa.select(
                 UsersEntity.id_, UsersEntity.name, UsersEntity.document
@@ -243,11 +267,24 @@ class ScoreRepository:
         # 7 – build individual ranking
         individual: list[UserRankingEntrySchema] = []
         for uid in all_user_ids:
-            scores = user_scores.get(uid, {"presenca": 0, "pontualidade": 0, "uniforme": 0, "modestia": 0})
+            scores = user_scores.get(
+                uid,
+                {
+                    "presenca": 0,
+                    "pontualidade": 0,
+                    "uniforme": 0,
+                    "modestia": 0,
+                },
+            )
             bonus = user_bonus.get(uid, 0)
             info = user_info.get(uid, (None, str(uid)))
             unit = user_unit.get(uid)
-            meeting_total = scores["presenca"] + scores["pontualidade"] + scores["uniforme"] + scores["modestia"]
+            meeting_total = (
+                scores["presenca"]
+                + scores["pontualidade"]
+                + scores["uniforme"]
+                + scores["modestia"]
+            )
             individual.append(
                 UserRankingEntrySchema(
                     user_id=uid,
@@ -288,24 +325,35 @@ class ScoreRepository:
             units_data[uid_unit]["member_bonus"] += entry.bonus
 
         # include units that only have unit-level bonuses
-        for u_id, pts in unit_bonus.items():
-            if u_id not in units_data:
-                unit_name_stmt = sa.select(UnitEntity.name).where(UnitEntity.id_ == u_id)
-                name_row = (await self.session.execute(unit_name_stmt)).scalar_one_or_none()
-                if name_row:
-                    units_data[u_id] = {
-                        "unit_name": name_row,
-                        "presenca": 0,
-                        "pontualidade": 0,
-                        "uniforme": 0,
-                        "modestia": 0,
-                        "member_bonus": 0,
-                    }
+        missing_unit_ids = [
+            u_id for u_id in unit_bonus.keys() if u_id not in units_data
+        ]
+
+        if missing_unit_ids:
+            unit_names_stmt = sa.select(UnitEntity.id_, UnitEntity.name).where(
+                UnitEntity.id_.in_(missing_unit_ids)
+            )
+            rows = (await self.session.execute(unit_names_stmt)).all()
+
+            for u_id, unit_name in rows:
+                units_data[u_id] = {
+                    "unit_name": unit_name,
+                    "presenca": 0,
+                    "pontualidade": 0,
+                    "uniforme": 0,
+                    "modestia": 0,
+                    "member_bonus": 0,
+                }
 
         units: list[UnitRankingEntrySchema] = []
         for u_id, data in units_data.items():
             ub = unit_bonus.get(u_id, 0)
-            meeting_total = data["presenca"] + data["pontualidade"] + data["uniforme"] + data["modestia"]
+            meeting_total = (
+                data["presenca"]
+                + data["pontualidade"]
+                + data["uniforme"]
+                + data["modestia"]
+            )
             units.append(
                 UnitRankingEntrySchema(
                     unit_id=u_id,
