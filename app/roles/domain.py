@@ -10,6 +10,7 @@ from app.api.domain import ApiDomain
 from app.api.exc import already_exists, does_not_exist
 from app.api.schemas import BaseResponseSchema
 from app.auth.repository import UserRepository
+from app.auth.schemas import UpdateUserSchema
 
 from .repository import RoleRepository, RoleScreenRepository, UserRoleRepository
 from .schemas import AssignRoleSchema, RevokeRoleSchema, UserPermissionsSchema
@@ -108,7 +109,7 @@ class ListUsersUseCase(ApiDomain):
 
     @override
     async def execute(self) -> BaseResponseSchema:
-        items, total = await self.user_repo.search(
+        items, total = await self.user_repo.search_with_unit(
             query=self.query,
             page=self.page,
             page_size=self.page_size,
@@ -122,6 +123,26 @@ class ListUsersUseCase(ApiDomain):
                 "page": self.page,
                 "page_size": self.page_size,
             },
+        )
+
+
+@dataclass
+class UpdateUserUseCase(ApiDomain):
+    user_id: UUID
+    payload: UpdateUserSchema
+    session: AsyncSession
+
+    @cached_property
+    def user_repo(self) -> UserRepository:
+        return UserRepository(self.session)
+
+    @override
+    async def execute(self) -> BaseResponseSchema:
+        result = await self.user_repo.update_user(self.user_id, self.payload)
+        return BaseResponseSchema(
+            status=status.HTTP_200_OK,
+            message="User updated successfully",
+            data=result,
         )
 
 

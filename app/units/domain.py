@@ -10,6 +10,7 @@ from app.api.domain import ApiDomain
 from app.api.exc import already_exists, does_not_exist, validation_error
 from app.api.schemas import BaseResponseSchema
 from app.classes.repository import ClassesRepository
+from app.club_year.repository import ClubYearRepository
 
 from .repository import UnitMemberRepository, UnitRepository
 from .schemas import AddUnitMemberSchema, CreateUnitSchema, UpdateUnitSchema
@@ -156,10 +157,16 @@ class AddUnitMemberUseCase(ApiDomain):
     def repository(self) -> UnitMemberRepository:
         return UnitMemberRepository(self.session)
 
+    @cached_property
+    def club_year_repository(self) -> ClubYearRepository:
+        return ClubYearRepository(self.session)
+
     @override
     async def execute(self) -> BaseResponseSchema:
         if not await self.unit_repository.exists(id_=self.unit_id):
             raise does_not_exist("Unit")
+        if not await self.club_year_repository.exists(id_=self.payload.club_year_id):
+            raise does_not_exist(f"ClubYear '{self.payload.club_year_id}'")
         if await self.repository.exists(
             unit_id=self.unit_id,
             user_id=self.payload.user_id,

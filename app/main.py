@@ -1,8 +1,12 @@
 from contextlib import AsyncExitStack, asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
 from loguru import logger
+from psycopg.errors import ForeignKeyViolation, UniqueViolation
+from sqlalchemy.exc import IntegrityError
+from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.api.exc import APIError, api_error_handler
@@ -22,6 +26,49 @@ async def lifespan(app: FastAPI):
     async with AsyncExitStack() as stack:
         await stack.enter_async_context(create_session_adapter(app))
         yield
+
+
+async def integrity_error_handler(
+    _: Request, exc: IntegrityError
+) -> ORJSONResponse:
+    cause = exc.orig
+    if isinstance(cause, ForeignKeyViolation):
+        # Log full DB error for observability without exposing details to clients
+        logger.exception("Integrity error (ForeignKeyViolation): {}", cause)
+        return ORJSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={
+                "message": "Related record not found",
+                # Do not expose raw DB error text to clients
+                "detail": "A related resource referenced by this request does not exist.",
+                "fields": [],
+                "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY,
+            },
+        )
+    if isinstance(cause, UniqueViolation):
+        # Log full DB error for observability without exposing details to clients
+        logger.exception("Integrity error (UniqueViolation): {}", cause)
+        return ORJSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={
+                "message": "Record already exists",
+                # Do not expose raw DB error text to clients
+                "detail": "A record with the same unique fields already exists.",
+                "fields": [],
+                "status_code": status.HTTP_409_CONFLICT,
+            },
+        )
+    # Log full DB error for observability
+    logger.exception("Integrity error (Unknown): {}", cause)
+    return ORJSONResponse(
+        status_code=status.HTTP_409_CONFLICT,
+        content={
+            "message": "Database integrity error",
+            "detail": "A database constraint was violated.",
+            "fields": [],
+            "status_code": status.HTTP_409_CONFLICT,
+        },
+    )
 
 
 def get_app() -> FastAPI:
@@ -45,7 +92,8 @@ def get_app() -> FastAPI:
         else None,
         lifespan=lifespan,
     )
-    app.add_exception_handler(APIError, api_error_handler)  # pyright: ignore[reportArgumentType]]
+    app.add_exception_handler(APIError, api_error_handler)  # pyright: ignore[reportArgumentType]
+    app.add_exception_handler(IntegrityError, integrity_error_handler)  # pyright: ignore[reportArgumentType]
     app.add_middleware(BaseHTTPMiddleware, dispatch=secure_middleware)
     app.add_middleware(
         CORSMiddleware,
