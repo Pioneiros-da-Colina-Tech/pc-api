@@ -33,7 +33,12 @@ class DatabaseSettings(Settings):
     DATABASE_USER: str = "postgres"
     DATABASE_PASSWORD: str = "postgres"
     DATABASE_ECHO: bool = False
-    DATABASE_POOL_SIZE: int = 3
+    DATABASE_POOL_SIZE: int = 10
+    DATABASE_POOL_MAX_OVERFLOW: int = 5
+    DATABASE_POOL_RECYCLE: int = 1800  # 30 minutes
+    DATABASE_POOL_PRE_PING: bool = True
+    DATABASE_POOL_TIMEOUT: int = 30
+    DATABASE_POOL_RESET_ON_RETURN: str = "commit"
 
 
 class RabbitMQSettings(Settings):

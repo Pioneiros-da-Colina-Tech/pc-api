@@ -2,6 +2,7 @@ from fastapi import APIRouter, status
 
 from app.auth.routes import router as auth_router
 from app.meetings.routes import router as meetings_router
+from app.roles.routes import router as roles_router
 
 from .schemas import BaseResponseSchema
 
@@ -16,3 +17,4 @@ async def health_check() -> BaseResponseSchema[None]:
 
 router.include_router(auth_router, prefix="/auth", tags=["Auth"])
 router.include_router(meetings_router, prefix="/meetings", tags=["Meetings"])
+router.include_router(roles_router, prefix="/roles", tags=["Roles"])

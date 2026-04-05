@@ -95,6 +95,35 @@ class Repository[T: Entity, S: BaseModel]:
         result = await self.context.execute(statement)
         return [self.to_schema(entity) for entity in result.scalars().all()]
 
+    async def fetch_paginated(
+        self, index: int = 0, index_size: int = 10, **filters: Any
+    ) -> list[S]:
+        """
+        Fetch entities with pagination.
+
+        Args:
+            index: Page index (0-based)
+            index_size: Number of items per page
+            **filters: Column name and value pairs to filter by
+
+        Returns:
+            List of schema representations of the entities for the requested page
+
+        Example:
+            >>> await repository.fetch_paginated(index=0, index_size=20)
+            >>> await repository.fetch_paginated(index=1, index_size=10, active=True)
+        """
+        offset = index * index_size
+        statement = (
+            sa.select(self.entity)
+            .filter_by(**filters)
+            .offset(offset)
+            .limit(index_size)
+        )
+
+        result = await self.context.execute(statement)
+        return [self.to_schema(entity) for entity in result.scalars().all()]
+
     async def create(self, schema: S) -> S:
         """
         Create a new entity.

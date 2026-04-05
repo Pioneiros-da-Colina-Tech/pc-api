@@ -1,4 +1,3 @@
-from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
@@ -52,13 +51,6 @@ async def sign_jwt(document: str) -> AuthTokenResponseSchema:
     return AuthTokenResponseSchema(
         access_token=access_token, token_type="bearer"
     )
-
-
-async def protected(func: Callable):
-    async def wrapper(credentials: AuthDependency):
-        func(credentials)
-
-    return wrapper
 
 
 async def decode_token(token: str) -> AuthTokenDataSchema:
