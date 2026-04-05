@@ -63,7 +63,6 @@ dev = [
     "basedpyright>=1.31.2",
     "commitizen>=4.8.3",
     "httpx>=0.28.1",
-    "locust>=2.42.2",
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.6.17",
     "pytest>=8.4.1",
