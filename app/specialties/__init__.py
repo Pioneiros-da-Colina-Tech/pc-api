@@ -1,0 +1,1 @@
+"""Specialties module for Desbravadores."""
