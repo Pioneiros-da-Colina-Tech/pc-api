@@ -12,18 +12,14 @@ from app.units.entities import UnitEntity
 from .concepts import RequestStatusConcept
 
 
-class ItemEntity(Entity, TimestampMixin, UUIDMixin):
-    __tablename__ = "heritage_item"
-
+class HeritageItemEntity(Entity, TimestampMixin, UUIDMixin):
     name: Mapped[str] = mapped_column(sa.Text, nullable=False)
     quantity: Mapped[int] = mapped_column(sa.Integer, nullable=False, default=0)
     acquisition_date: Mapped[date] = mapped_column(sa.Date, nullable=False)
     description: Mapped[str | None] = mapped_column(sa.Text, nullable=True)
 
 
-class RequestEntity(Entity, TimestampMixin, UUIDMixin):
-    __tablename__ = "heritage_request"
-
+class HeritageRequestEntity(Entity, TimestampMixin, UUIDMixin):
     meeting_id: Mapped[UUID] = mapped_column(
         sa.ForeignKey("meetings.id"), nullable=False
     )
@@ -32,21 +28,21 @@ class RequestEntity(Entity, TimestampMixin, UUIDMixin):
     )
 
     status: Mapped[RequestStatusConcept] = mapped_column(
-        sa.Enum(RequestStatusConcept, values_callable=lambda x: [e.value for e in x]),
+        sa.Enum(
+            RequestStatusConcept, values_callable=lambda x: [e.value for e in x]
+        ),
         nullable=False,
         default=RequestStatusConcept.PENDING,
     )
     rejection_reason: Mapped[str | None] = mapped_column(sa.Text, nullable=True)
     meeting: Mapped[MeetingsEntity] = relationship()
     unit: Mapped[UnitEntity] = relationship()
-    requested_items: Mapped[list["RequestItemEntity"]] = relationship(
+    requested_items: Mapped[list["HeritageRequestItemEntity"]] = relationship(
         back_populates="request"
     )
 
 
-class RequestItemEntity(Entity, TimestampMixin, UUIDMixin):
-    __tablename__ = "heritage_request_item"
-
+class HeritageRequestItemEntity(Entity, TimestampMixin, UUIDMixin):
     request_id: Mapped[UUID] = mapped_column(
         sa.ForeignKey("heritage_request.id"), nullable=False
     )
@@ -57,7 +53,7 @@ class RequestItemEntity(Entity, TimestampMixin, UUIDMixin):
     acquisition_date: Mapped[date | None] = mapped_column(
         sa.Date, nullable=True
     )
-    request: Mapped[RequestEntity] = relationship(
+    request: Mapped[HeritageRequestEntity] = relationship(
         back_populates="requested_items"
     )
-    item: Mapped[ItemEntity] = relationship()
+    item: Mapped[HeritageItemEntity] = relationship()

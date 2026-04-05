@@ -7,28 +7,32 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.heritage.concepts import RequestStatusConcept
-from app.heritage.entities import ItemEntity, RequestEntity, RequestItemEntity
+from app.heritage.entities import (
+    HeritageItemEntity,
+    HeritageRequestEntity,
+    HeritageRequestItemEntity,
+)
 from app.heritage.schemas import (
     CreateItemSchema,
     CreateRequestSchema,
+    HeritageItemSchema,
+    HeritageRequestItemSchema,
+    HeritageRequestSchema,
     ItemPageSchema,
-    ItemSchema,
     ItemSummarySchema,
-    RequestItemSchema,
-    RequestSchema,
     UpdateItemSchema,
     UpdateRequestStatusSchema,
 )
 from app.infra.database.repository import Repository
 
 
-class ItemRepository(Repository[ItemEntity, ItemSchema]):
+class ItemRepository(Repository[HeritageItemEntity, HeritageItemSchema]):
     def __init__(self, session: AsyncSession):
-        super().__init__(context=session, entity=ItemEntity)
+        super().__init__(context=session, entity=HeritageItemEntity)
 
     @override
-    def to_schema(self, entity: ItemEntity) -> ItemSchema:
-        return ItemSchema(
+    def to_schema(self, entity: HeritageItemEntity) -> HeritageItemSchema:
+        return HeritageItemSchema(
             id_=entity.id_,
             name=entity.name,
             quantity=entity.quantity,
@@ -40,8 +44,8 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
         )
 
     @override
-    def to_entity(self, schema: ItemSchema) -> ItemEntity:
-        return ItemEntity(
+    def to_entity(self, schema: HeritageItemSchema) -> HeritageItemEntity:
+        return HeritageItemEntity(
             id_=schema.id_,
             name=schema.name,
             quantity=schema.quantity,
@@ -52,8 +56,8 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
             deleted_at=schema.deleted_at,
         )
 
-    async def create_item(self, data: CreateItemSchema) -> ItemSchema:
-        entity = ItemEntity(
+    async def create_item(self, data: CreateItemSchema) -> HeritageItemSchema:
+        entity = HeritageItemEntity(
             id_=uuid4(),
             name=data.name,
             quantity=data.quantity,
@@ -82,30 +86,32 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
         ]
         committed_sq = (
             sa.select(
-                RequestItemEntity.item_id,
+                HeritageRequestItemEntity.item_id,
                 sa.func.coalesce(
-                    sa.func.sum(RequestItemEntity.quantity), 0
+                    sa.func.sum(HeritageRequestItemEntity.quantity), 0
                 ).label("committed"),
             )
             .join(
-                RequestEntity, RequestItemEntity.request_id == RequestEntity.id_
+                HeritageRequestEntity,
+                HeritageRequestItemEntity.request_id
+                == HeritageRequestEntity.id_,
             )
             .where(
-                RequestEntity.status.in_(active_statuses),
-                RequestItemEntity.deleted_at.is_(None),
-                RequestEntity.deleted_at.is_(None),
+                HeritageRequestEntity.status.in_(active_statuses),
+                HeritageRequestItemEntity.deleted_at.is_(None),
+                HeritageRequestEntity.deleted_at.is_(None),
             )
-            .group_by(RequestItemEntity.item_id)
+            .group_by(HeritageRequestItemEntity.item_id)
             .subquery()
         )
 
-        base_where = [ItemEntity.deleted_at.is_(None)]
+        base_where = [HeritageItemEntity.deleted_at.is_(None)]
         if name:
-            base_where.append(ItemEntity.name.ilike(f"%{name}%"))
+            base_where.append(HeritageItemEntity.name.ilike(f"%{name}%"))
 
         count_stmt = (
             sa.select(sa.func.count())
-            .select_from(ItemEntity)
+            .select_from(HeritageItemEntity)
             .where(*base_where)
         )
         total = (await self.context.execute(count_stmt)).scalar_one()
@@ -113,14 +119,16 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
         offset = (page - 1) * page_size
         stmt = (
             sa.select(
-                ItemEntity,
+                HeritageItemEntity,
                 sa.func.coalesce(committed_sq.c.committed, 0).label(
                     "committed"
                 ),
             )
-            .outerjoin(committed_sq, ItemEntity.id_ == committed_sq.c.item_id)
+            .outerjoin(
+                committed_sq, HeritageItemEntity.id_ == committed_sq.c.item_id
+            )
             .where(*base_where)
-            .order_by(ItemEntity.name)
+            .order_by(HeritageItemEntity.name)
             .offset(offset)
             .limit(page_size)
         )
@@ -139,14 +147,17 @@ class ItemRepository(Repository[ItemEntity, ItemSchema]):
 
     async def update_item(
         self, item_id: UUID, data: UpdateItemSchema
-    ) -> ItemSchema:
+    ) -> HeritageItemSchema:
         updates: dict = data.model_dump(exclude_unset=True)
         updates["updated_at"] = datetime.now(UTC)
         stmt = (
-            sa.update(ItemEntity)
-            .where(ItemEntity.id_ == item_id, ItemEntity.deleted_at.is_(None))
+            sa.update(HeritageItemEntity)
+            .where(
+                HeritageItemEntity.id_ == item_id,
+                HeritageItemEntity.deleted_at.is_(None),
+            )
             .values(**updates)
-            .returning(ItemEntity)
+            .returning(HeritageItemEntity)
         )
         result = await self.context.execute(stmt)
         updated = result.scalars().first()
@@ -161,15 +172,17 @@ class RequestRepository:
     def __init__(self, session: AsyncSession):
         self.context = session
 
-    def _to_schema(self, entity: RequestEntity) -> RequestSchema:
-        return RequestSchema(
+    def _to_schema(
+        self, entity: HeritageRequestEntity
+    ) -> HeritageRequestSchema:
+        return HeritageRequestSchema(
             id_=entity.id_,
             meeting_id=entity.meeting_id,
             unit_id=entity.unit_id,
             status=entity.status,
             rejection_reason=entity.rejection_reason,
             items=[
-                RequestItemSchema(
+                HeritageRequestItemSchema(
                     id_=ri.id_,
                     request_id=ri.request_id,
                     item_id=ri.item_id,
@@ -185,8 +198,10 @@ class RequestRepository:
             deleted_at=entity.deleted_at,
         )
 
-    async def create_request(self, data: CreateRequestSchema) -> RequestSchema:
-        request = RequestEntity(
+    async def create_request(
+        self, data: CreateRequestSchema
+    ) -> HeritageRequestSchema:
+        request = HeritageRequestEntity(
             id_=uuid4(),
             meeting_id=data.meeting_id,
             unit_id=data.unit_id,
@@ -200,7 +215,7 @@ class RequestRepository:
         await self.context.flush()
 
         for item_data in data.items:
-            request_item = RequestItemEntity(
+            request_item = HeritageRequestItemEntity(
                 id_=uuid4(),
                 request_id=request.id_,
                 item_id=item_data.item_id,
@@ -215,13 +230,13 @@ class RequestRepository:
         await self.context.flush()
 
         stmt = (
-            sa.select(RequestEntity)
+            sa.select(HeritageRequestEntity)
             .options(
-                selectinload(RequestEntity.requested_items).selectinload(
-                    RequestItemEntity.item
-                )
+                selectinload(
+                    HeritageRequestEntity.requested_items
+                ).selectinload(HeritageRequestItemEntity.item)
             )
-            .where(RequestEntity.id_ == request.id_)
+            .where(HeritageRequestEntity.id_ == request.id_)
         )
         result = await self.context.execute(stmt)
         full = result.scalar_one()
@@ -229,32 +244,34 @@ class RequestRepository:
 
     async def list_requests(
         self, unit_id: UUID | None = None
-    ) -> list[RequestSchema]:
+    ) -> list[HeritageRequestSchema]:
         stmt = (
-            sa.select(RequestEntity)
+            sa.select(HeritageRequestEntity)
             .options(
-                selectinload(RequestEntity.requested_items).selectinload(
-                    RequestItemEntity.item
-                )
+                selectinload(
+                    HeritageRequestEntity.requested_items
+                ).selectinload(HeritageRequestItemEntity.item)
             )
-            .where(RequestEntity.deleted_at.is_(None))
+            .where(HeritageRequestEntity.deleted_at.is_(None))
         )
         if unit_id is not None:
-            stmt = stmt.where(RequestEntity.unit_id == unit_id)
+            stmt = stmt.where(HeritageRequestEntity.unit_id == unit_id)
         result = await self.context.execute(stmt)
         return [self._to_schema(e) for e in result.scalars().all()]
 
-    async def get_request(self, request_id: UUID) -> RequestSchema | None:
+    async def get_request(
+        self, request_id: UUID
+    ) -> HeritageRequestSchema | None:
         stmt = (
-            sa.select(RequestEntity)
+            sa.select(HeritageRequestEntity)
             .options(
-                selectinload(RequestEntity.requested_items).selectinload(
-                    RequestItemEntity.item
-                )
+                selectinload(
+                    HeritageRequestEntity.requested_items
+                ).selectinload(HeritageRequestItemEntity.item)
             )
             .where(
-                RequestEntity.id_ == request_id,
-                RequestEntity.deleted_at.is_(None),
+                HeritageRequestEntity.id_ == request_id,
+                HeritageRequestEntity.deleted_at.is_(None),
             )
         )
         result = await self.context.execute(stmt)
@@ -263,12 +280,12 @@ class RequestRepository:
 
     async def update_status(
         self, request_id: UUID, data: UpdateRequestStatusSchema
-    ) -> RequestSchema | None:
+    ) -> HeritageRequestSchema | None:
         stmt = (
-            sa.update(RequestEntity)
+            sa.update(HeritageRequestEntity)
             .where(
-                RequestEntity.id_ == request_id,
-                RequestEntity.deleted_at.is_(None),
+                HeritageRequestEntity.id_ == request_id,
+                HeritageRequestEntity.deleted_at.is_(None),
             )
             .values(
                 status=data.status,

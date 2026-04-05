@@ -15,7 +15,7 @@ class CreateItemSchema(BaseModel):
     description: str | None = Field(default=None, examples=["Modelo Mor"])
 
 
-class ItemSchema(CreateItemSchema):
+class HeritageItemSchema(CreateItemSchema):
     id_: UUID = Field(examples=[UUID("223e4567-e89b-12d3-a456-426614174001")])
     created_at: datetime = Field(examples=[datetime(2023, 1, 1)])
     updated_at: datetime | None = Field(examples=[None])
@@ -32,7 +32,7 @@ class CreateRequestItemSchema(BaseModel):
     )
 
 
-class RequestItemSchema(CreateRequestItemSchema):
+class HeritageRequestItemSchema(CreateRequestItemSchema):
     id_: UUID = Field(examples=[UUID("323e4567-e89b-12d3-a456-426614174002")])
     request_id: UUID = Field(
         examples=[UUID("423e4567-e89b-12d3-a456-426614174003")]
@@ -66,7 +66,7 @@ class UpdateItemSchema(BaseModel):
     description: str | None = Field(default=None, examples=["Modelo Mor"])
 
 
-class ItemSummarySchema(ItemSchema):
+class ItemSummarySchema(HeritageItemSchema):
     committed_quantity: int = Field(
         examples=[2], description="Quantity committed in active requests"
     )
@@ -92,7 +92,7 @@ class UpdateRequestStatusSchema(BaseModel):
     )
 
 
-class RequestSchema(BaseModel):
+class HeritageRequestSchema(BaseModel):
     id_: UUID = Field(examples=[UUID("423e4567-e89b-12d3-a456-426614174003")])
     meeting_id: UUID = Field(
         examples=[UUID("123e4567-e89b-12d3-a456-426614174000")]
@@ -104,7 +104,7 @@ class RequestSchema(BaseModel):
         examples=[RequestStatusConcept.PENDING]
     )
     rejection_reason: str | None = Field(default=None)
-    items: list[RequestItemSchema]
+    items: list[HeritageRequestItemSchema]
 
     created_at: datetime = Field(examples=[datetime(2023, 1, 1)])
     updated_at: datetime | None = Field(examples=[None])
