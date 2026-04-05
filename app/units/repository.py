@@ -8,8 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.exc import does_not_exist
 from app.infra.database.repository import Repository
 
-from .entities import UnitEntity, UnitMemberEntity
 from .concepts import UnitRole
+from .entities import UnitEntity, UnitMemberEntity
 from .schemas import (
     AddUnitMemberSchema,
     CreateUnitSchema,
@@ -65,7 +65,10 @@ class UnitRepository(Repository[UnitEntity, UnitSchema]):
         statement = (
             sa.update(UnitEntity)
             .filter_by(**filters)
-            .values(**data.model_dump(exclude_unset=True))
+            .values(
+                **data.model_dump(exclude_unset=True),
+                updated_at=datetime.now(UTC),
+            )
             .returning(UnitEntity)
         )
         result = await self.context.execute(statement)

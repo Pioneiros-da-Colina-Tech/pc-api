@@ -62,7 +62,10 @@ class ClassesRepository(Repository[ClassesEntity, ClassesSchema]):
         statement = (
             sa.update(ClassesEntity)
             .filter_by(**filters)
-            .values(**data.model_dump(exclude_unset=True))
+            .values(
+                **data.model_dump(exclude_unset=True),
+                updated_at=datetime.now(UTC),
+            )
             .returning(ClassesEntity)
         )
         result = await self.context.execute(statement)
@@ -129,7 +132,10 @@ class ClassesRequirementRepository(
         statement = (
             sa.update(ClassesRequirementEntity)
             .filter_by(**filters)
-            .values(**data.model_dump(exclude_unset=True))
+            .values(
+                **data.model_dump(exclude_unset=True),
+                updated_at=datetime.now(UTC),
+            )
             .returning(ClassesRequirementEntity)
         )
         result = await self.context.execute(statement)

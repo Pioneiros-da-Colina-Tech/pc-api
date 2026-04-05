@@ -3,7 +3,6 @@ from typing import override
 from uuid import UUID, uuid4
 
 import sqlalchemy as sa
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.exc import does_not_exist
@@ -58,16 +57,7 @@ class AttendanceRepository(Repository[AttendanceEntity, AttendanceSchema]):
             updated_at=None,
             deleted_at=None,
         )
-        try:
-            return await self.create(record)
-        except IntegrityError as e:
-            # Handle foreign key violations
-            if "user_id" in str(e.orig):
-                raise does_not_exist("User")
-            if "meeting_id" in str(e.orig):
-                raise does_not_exist("Meeting")
-            # Re-raise for other integrity errors
-            raise
+        return await self.create(record)
 
     async def update_attendance(
         self, meeting_id: UUID, user_id: UUID, data: UpdateAttendanceSchema
@@ -78,7 +68,10 @@ class AttendanceRepository(Repository[AttendanceEntity, AttendanceSchema]):
                 AttendanceEntity.meeting_id == meeting_id,
                 AttendanceEntity.user_id == user_id,
             )
-            .values(attendance_status=data.attendance_status)
+            .values(
+                attendance_status=data.attendance_status,
+                updated_at=datetime.now(UTC),
+            )
             .returning(AttendanceEntity)
         )
         result = await self.context.execute(statement)

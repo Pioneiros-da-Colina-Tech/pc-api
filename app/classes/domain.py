@@ -50,7 +50,7 @@ class ListClassesUseCase(ApiDomain):
     async def execute(self) -> BaseResponseSchema:
         result = await self.repository.fetch_all()
         return BaseResponseSchema(
-            message="Classeses retrieved successfully",
+            message="Classes retrieved successfully",
             data=result,
         )
 
