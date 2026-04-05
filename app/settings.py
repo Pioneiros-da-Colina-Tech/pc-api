@@ -1,14 +1,30 @@
+import multiprocessing
 import tomllib
+from enum import Enum
+from functools import cache
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-def get_version() -> str:
-    pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
+@cache
+def pyproject() -> dict:
+    """Loads the pyproject.toml file and returns its contents as a dictionary."""
+    pyproject_path = Path(__file__).resolve().parent.parent / "pyproject.toml"
     with open(pyproject_path, "rb") as f:
-        pyproject = tomllib.load(f)
-    return pyproject["project"]["version"]
+        return tomllib.load(f)
+
+
+def get_version() -> str:
+    return pyproject()["project"]["version"]
+
+
+def get_app_name() -> str:
+    return pyproject()["project"]["name"]
+
+
+def get_workers() -> int:
+    return (multiprocessing.cpu_count() * 2) + 1
 
 
 class Settings(BaseSettings):
@@ -18,17 +34,25 @@ class Settings(BaseSettings):
     pass
 
 
+class EnvironmentEnum(str, Enum):
+    DEV = "development"
+    PROD = "production"
+    STAGING = "staging"
+    TEST = "test"
+
+
 class ServerSettings(Settings):
     SERVER_HOST: str = "0.0.0.0"
     SERVER_PORT: int = 8000
-    LOCAL: bool = False
     LOG_LEVEL: str = "info"
-    WORKERS: int = 1
+    ENVIRONMENT: EnvironmentEnum = EnvironmentEnum.DEV
+    WORKERS: int = get_workers()
+    SENTRY_DSN: str = ""
 
 
 class DatabaseSettings(Settings):
     DATABASE_HOST: str = "localhost"
-    DATABASE_PORT: int = 15432
+    DATABASE_PORT: int = 5432
     DATABASE_NAME: str = "postgres"
     DATABASE_USER: str = "postgres"
     DATABASE_PASSWORD: str = "postgres"
@@ -41,18 +65,6 @@ class DatabaseSettings(Settings):
     DATABASE_POOL_RESET_ON_RETURN: str = "commit"
 
 
-class RabbitMQSettings(Settings):
-    RABBITMQ_HOST: str = "localhost"
-    RABBITMQ_PORT: int = 5672
-    RABBITMQ_USER: str = "guest"
-    RABBITMQ_PASSWORD: str = "guest"
-    RABBITMQ_VIRTUAL_HOST: str = "/"
-    RABBITMQ_HEARTBEAT: int = 600
-    RABBITMQ_BLOCKED_CONNECTION_TIMEOUT: int = 300
-    RABBITMQ_CONNECTION_ATTEMPTS: int = 3
-    RABBITMQ_RETRY_DELAY: int = 2
-
-
 class AuthSettings(Settings):
     AUTH_SECRET_KEY: str = "secret"
     AUTH_ALGORITHM: str = "HS256"
@@ -61,7 +73,7 @@ class AuthSettings(Settings):
 
 server_settings = ServerSettings()
 database_settings = DatabaseSettings()
-rabbitmq_settings = RabbitMQSettings()
 auth_settings = AuthSettings()
 VERSION = get_version()
+APP_NAME = get_app_name()
 ROOT = Path(__file__).resolve().parent
