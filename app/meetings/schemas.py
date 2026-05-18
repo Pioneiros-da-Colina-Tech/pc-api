@@ -11,7 +11,9 @@ class CreateMeetingSchema(BaseModel):
 
 
 class UpdateMeetingSchema(BaseModel):
-    name: str | None = Field(default=None, examples=["Meeting 1"], min_length=2, max_length=100)
+    name: str | None = Field(
+        default=None, examples=["Meeting 1"], min_length=2, max_length=100
+    )
     date: dt | None = Field(default=None, examples=[dt(2023, 1, 1)])
 
 
