@@ -49,14 +49,8 @@ class MeetingsRepository(Repository[MeetingsEntity, MeetingsSchema]):
 
     async def update_meeting(self, meeting_id: UUID, data: UpdateMeetingSchema) -> MeetingsSchema:
         current = await self.get(id_=meeting_id)
-        updated = MeetingsSchema(
-            id_=current.id_,
-            name=data.name if data.name is not None else current.name,
-            date=data.date if data.date is not None else current.date,
-            created_at=current.created_at,
-            updated_at=datetime.now(UTC),
-            deleted_at=current.deleted_at,
-        )
+        patch = data.model_dump(exclude_unset=True)
+        updated = current.model_copy(update={**patch, "updated_at": datetime.now(UTC)})
         return await self.update(updated, id_=meeting_id)
 
     async def fetch_meetings_for_user(

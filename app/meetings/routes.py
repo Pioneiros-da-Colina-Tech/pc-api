@@ -52,18 +52,18 @@ async def get_meeting(
     session: SessionContext,
     _: AuthDependency,
 ) -> BaseResponseSchema:
-    """Get a meeting by ID."""
+    """Get a meeting by ID. Meetings are club-wide resources visible to all authenticated members."""
     return await GetMeetingUseCase(meeting_id, session).execute()
 
 
-@router.put("/{meeting_id}")
+@router.patch("/{meeting_id}")
 async def update_meeting(
     meeting_id: UUID,
     payload: UpdateMeetingSchema,
     session: SessionContext,
     _: AuthDependency,
 ) -> BaseResponseSchema:
-    """Update a meeting."""
+    """Partially update a meeting (name and/or date)."""
     return await UpdateMeetingUseCase(meeting_id, payload, session).execute()
 
 
