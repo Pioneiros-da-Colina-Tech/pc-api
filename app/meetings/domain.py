@@ -83,7 +83,9 @@ class UpdateMeetingUseCase(ApiDomain):
 
     @override
     async def execute(self) -> BaseResponseSchema:
-        result = await self.repository.update_meeting(self.meeting_id, self.payload)
+        result = await self.repository.update_meeting(
+            self.meeting_id, self.payload
+        )
         return BaseResponseSchema(
             message="Meeting updated successfully",
             data=result,
