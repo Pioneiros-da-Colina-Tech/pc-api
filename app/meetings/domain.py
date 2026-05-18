@@ -10,7 +10,7 @@ from app.api.domain import ApiDomain
 from app.api.schemas import BaseResponseSchema
 
 from .repository import MeetingsRepository
-from .schemas import CreateMeetingSchema
+from .schemas import CreateMeetingSchema, UpdateMeetingSchema
 
 
 @dataclass
@@ -50,4 +50,59 @@ class ListMeetingsUseCase(ApiDomain):
         return BaseResponseSchema(
             message="Meetings retrieved successfully",
             data=result,
+        )
+
+
+@dataclass
+class GetMeetingUseCase(ApiDomain):
+    meeting_id: UUID
+    session: AsyncSession
+
+    @cached_property
+    def repository(self) -> MeetingsRepository:
+        return MeetingsRepository(self.session)
+
+    @override
+    async def execute(self) -> BaseResponseSchema:
+        result = await self.repository.get(id_=self.meeting_id)
+        return BaseResponseSchema(
+            message="Meeting retrieved successfully",
+            data=result,
+        )
+
+
+@dataclass
+class UpdateMeetingUseCase(ApiDomain):
+    meeting_id: UUID
+    payload: UpdateMeetingSchema
+    session: AsyncSession
+
+    @cached_property
+    def repository(self) -> MeetingsRepository:
+        return MeetingsRepository(self.session)
+
+    @override
+    async def execute(self) -> BaseResponseSchema:
+        result = await self.repository.update_meeting(self.meeting_id, self.payload)
+        return BaseResponseSchema(
+            message="Meeting updated successfully",
+            data=result,
+        )
+
+
+@dataclass
+class DeleteMeetingUseCase(ApiDomain):
+    meeting_id: UUID
+    session: AsyncSession
+
+    @cached_property
+    def repository(self) -> MeetingsRepository:
+        return MeetingsRepository(self.session)
+
+    @override
+    async def execute(self) -> BaseResponseSchema:
+        await self.repository.delete(id_=self.meeting_id)
+        return BaseResponseSchema(
+            message="Meeting deleted successfully",
+            data=None,
         )

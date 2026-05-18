@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.infra.database.repository import Repository
 from app.meetings.entities import MeetingsEntity
-from app.meetings.schemas import CreateMeetingSchema, MeetingsSchema
+from app.meetings.schemas import CreateMeetingSchema, MeetingsSchema, UpdateMeetingSchema
 
 
 class MeetingsRepository(Repository[MeetingsEntity, MeetingsSchema]):
@@ -46,6 +46,12 @@ class MeetingsRepository(Repository[MeetingsEntity, MeetingsSchema]):
             deleted_at=None,
         )
         return await self.create(meeting_data)
+
+    async def update_meeting(self, meeting_id: UUID, data: UpdateMeetingSchema) -> MeetingsSchema:
+        current = await self.get(id_=meeting_id)
+        patch = data.model_dump(exclude_unset=True)
+        updated = current.model_copy(update={**patch, "updated_at": datetime.now(UTC)})
+        return await self.update(updated, id_=meeting_id)
 
     async def fetch_meetings_for_user(
         self, user_id: UUID
